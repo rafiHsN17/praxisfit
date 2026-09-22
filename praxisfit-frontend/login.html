@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PraxisFit</title>
+    <script src="assets/js/theme.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-zinc-900 text-slate-800 dark:text-zinc-300 font-sans transition-colors duration-300">
+    
+    <!-- Theme Toggle Corner -->
+    <div class="absolute top-6 right-6 z-50">
+        <button onclick="toggleTheme()" class="text-xl p-3 bg-white dark:bg-zinc-800 rounded-full shadow-md hover:shadow-lg transition-all" aria-label="Toggle Dark Mode">
+            <span class="dark:hidden">🌙</span>
+            <span class="hidden dark:inline">☀️</span>
+        </button>
+    </div>
+
+    <div class="flex justify-center items-center h-screen">
+        <div class="bg-white dark:bg-zinc-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-zinc-700 w-96 transition-colors duration-300">
+            <h2 id="form-title" class="text-2xl font-extrabold mb-6 text-center text-red-600 dark:text-lime-400 transition-colors duration-300">
+                Login PraxisFit
+            </h2>
+          
+            <form id="auth-form" class="space-y-4">
+                <input 
+                    id="name-input"
+                    type="text" 
+                    placeholder="Nama Lengkap" 
+                    class="w-full p-3 border border-gray-200 dark:border-zinc-600 rounded-xl focus:ring-2 focus:ring-red-500 dark:focus:ring-lime-400 outline-none bg-gray-50 dark:bg-zinc-900 text-slate-800 dark:text-white transition-colors duration-300 hidden" 
+                >
+                
+                <input 
+                    id="email-input"
+                    type="email" 
+                    placeholder="Alamat Email" 
+                    class="w-full p-3 border border-gray-200 dark:border-zinc-600 rounded-xl focus:ring-2 focus:ring-red-500 dark:focus:ring-lime-400 outline-none bg-gray-50 dark:bg-zinc-900 text-slate-800 dark:text-white transition-colors duration-300" 
+                    required
+                >
+                
+                <input 
+                    id="password-input"
+                    type="password" 
+                    placeholder="Password (minimal 6 karakter)" 
+                    class="w-full p-3 border border-gray-200 dark:border-zinc-600 rounded-xl focus:ring-2 focus:ring-red-500 dark:focus:ring-lime-400 outline-none bg-gray-50 dark:bg-zinc-900 text-slate-800 dark:text-white transition-colors duration-300" 
+                    required
+                >
+                
+                <button type="submit" id="submit-btn" class="w-full bg-red-600 dark:bg-lime-400 text-white dark:text-zinc-900 font-bold p-3 rounded-xl hover:bg-red-700 dark:hover:bg-lime-500 transition-colors duration-300 shadow-md">
+                    Masuk Sekarang
+                </button>
+            </form>
+    
+            <div class="mt-6 text-center text-sm text-gray-500 dark:text-zinc-400">
+                <span id="toggle-text">Belum punya akun?</span>
+                <button id="toggle-btn" class="text-red-600 dark:text-lime-400 font-bold hover:underline ml-1">
+                    Daftar di sini
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script>
+        // If already logged in, redirect to respective pages
+        if (localStorage.getItem('isAdminLoggedIn') === 'true') {
+            window.location.href = 'admin.html';
+        } else if (localStorage.getItem('isLoggedIn') && localStorage.getItem('token')) {
+            window.location.href = 'index.html';
+        }
+
+        let isLoginMode = true;
+
+        const authForm = document.getElementById('auth-form');
+        const formTitle = document.getElementById('form-title');
+        const nameInput = document.getElementById('name-input');
+        const emailInput = document.getElementById('email-input');
+        const passwordInput = document.getElementById('password-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleText = document.getElementById('toggle-text');
+        const toggleBtn = document.getElementById('toggle-btn');
+
+        toggleBtn.addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            if (isLoginMode) {
+                formTitle.textContent = 'Login PraxisFit';
+                nameInput.classList.add('hidden');
+                nameInput.removeAttribute('required');
+                submitBtn.textContent = 'Masuk Sekarang';
+                toggleText.textContent = 'Belum punya akun?';
+                toggleBtn.textContent = 'Daftar di sini';
+            } else {
+                formTitle.textContent = 'Daftar Akun Baru';
+                nameInput.classList.remove('hidden');
+                nameInput.setAttribute('required', 'true');
+                submitBtn.textContent = 'Buat Akun';
+                toggleText.textContent = 'Sudah punya akun?';
+                toggleBtn.textContent = 'Login di sini';
+            }
+        });
+
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Memproses...';
+
+            const payload = {
+                email: emailInput.value,
+                password: passwordInput.value
+            };
+
+            if (!isLoginMode) {
+                payload.name = nameInput.value;
+            }
+
+            try {
+                if (isLoginMode) {
+                    // Check for hardcoded admin credentials
+                    if (payload.email === 'admin-praxisfit-1' && payload.password === 'kodok-loncat') {
+                        localStorage.setItem('isAdminLoggedIn', 'true');
+                        alert("Login Admin Berhasil!");
+                        window.location.href = 'admin.html';
+                        return;
+                    }
+
+                    const response = await fetchApi('/login', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+
+                    localStorage.setItem("token", response.token); 
+                    localStorage.setItem("isLoggedIn", "true");
+                    
+                    alert("Berhasil masuk!");
+                    window.location.href = 'index.html';
+                } else {
+                    await fetchApi('/register', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    alert("Akun berhasil dibuat! Silakan login.");
+                    // Reset to login mode
+                    toggleBtn.click();
+                    passwordInput.value = '';
+                }
+            } catch (error) {
+                if (error.status === 422) {
+                    alert(error.data?.message || "Data tidak valid! Mungkin email sudah dipakai.");
+                } else if (error.status === 401) {
+                    alert(error.data?.message || "Email atau Password salah!");
+                } else {
+                    alert("Terjadi kesalahan sistem dari server!");
+                    console.error("Detail Error:", error);
+                }
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isLoginMode ? 'Masuk Sekarang' : 'Buat Akun';
+            }
+        });
+    </script>
+</body>
+</html>

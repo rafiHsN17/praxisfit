@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PraxisFit</title>
+    <script src="assets/js/theme.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body
+    class="bg-slate-50 dark:bg-zinc-900 text-slate-800 dark:text-zinc-300 font-sans min-h-screen transition-colors duration-300">
+
+    <!-- NAVBAR -->
+    <nav
+        class="bg-white dark:bg-zinc-800 shadow-sm border-b border-gray-100 dark:border-zinc-700 sticky top-0 z-50 transition-colors duration-300">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="flex justify-between h-16 items-center">
+
+                <!-- Logo -->
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">💪</span>
+                    <span
+                        class="font-extrabold text-xl text-red-600 dark:text-lime-400 tracking-tight transition-colors duration-300">PraxisFit</span>
+                </div>
+
+                <!-- Menu Navigasi Tengah -->
+                <div class="flex gap-6 items-center font-medium text-gray-500 dark:text-zinc-400">
+                    <a href="index.html"
+                        class="text-red-600 dark:text-lime-400 font-bold hover:text-red-700 dark:hover:text-lime-500 transition-colors">Dashboard</a>
+                    <a href="calculator.html"
+                        class="hover:text-red-600 dark:hover:text-lime-400 transition-colors">Kalkulator</a>
+                    <a href="equipments.html"
+                        class="hover:text-red-600 dark:hover:text-lime-400 transition-colors">Jadwal</a>
+                    <a href="profile.html"
+                        class="hover:text-red-600 dark:hover:text-lime-400 transition-colors">Profil</a>
+                </div>
+
+                <!-- Tombol Kanan (Theme & Logout) -->
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleTheme()"
+                        class="text-xl p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors"
+                        aria-label="Toggle Dark Mode">
+                        <span class="dark:hidden">🌙</span>
+                        <span class="hidden dark:inline">☀️</span>
+                    </button>
+                    <button onclick="logout()"
+                        class="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 px-4 py-2 rounded-xl font-bold transition-colors">
+                        Logout
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- KONTEN HALAMAN -->
+    <main class="py-12">
+        <div class="max-w-4xl mx-auto p-6">
+
+            <!-- Motivational Hero Section -->
+            <div class="text-center mb-12">
+                <h1
+                    class="text-4xl md:text-5xl font-extrabold text-gray-800 dark:text-white mb-4 transition-colors duration-300 tracking-tight">
+                    Siap menghancurkan batasmu hari ini?
+                </h1>
+                <p class="text-lg text-gray-500 dark:text-zinc-400 max-w-2xl mx-auto transition-colors duration-300">
+                    Ini adalah <span class="text-red-600 dark:text-lime-400 font-bold">Command Center</span> Anda.
+                    Pantau nutrisi, eksekusi latihan, dan jadilah versi terbaik dari dirimu.
+                </p>
+            </div>
+
+            <!-- Daily Snapshot Widget -->
+            <div
+                class="bg-white dark:bg-zinc-800 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-zinc-700 mb-12 transition-colors duration-300">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                            <span>🔥</span> Ringkasan Harian
+                        </h2>
+                        <p class="text-sm text-gray-500 dark:text-zinc-400 mt-1">Target Protein: <span
+                                id="widget-target">150</span>g</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-4xl font-extrabold text-red-600 dark:text-lime-400">
+                            <span id="widget-protein">0</span><span class="text-xl">g</span>
+                        </p>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Terkonsumsi</p>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-100 dark:bg-zinc-900 rounded-full h-4 overflow-hidden shadow-inner">
+                    <div id="widget-progress-bar"
+                        class="bg-red-600 dark:bg-lime-400 h-4 rounded-full transition-all duration-700 ease-out"
+                        style="width: 0%"></div>
+                </div>
+                <p id="widget-message" class="text-center text-sm font-medium text-gray-500 dark:text-zinc-400 mt-4">
+                    Belum ada data hari ini. Ayo catat makananmu!
+                </p>
+            </div>
+
+            <!-- Weekly Progress Chart -->
+            <div
+                class="bg-white dark:bg-zinc-800 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-zinc-700 mb-12 transition-colors duration-300">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                            <span>📊</span> Grafik Mingguan
+                        </h2>
+                        <p class="text-sm text-gray-500 dark:text-zinc-400 mt-1">Konsumsi protein selama 7 hari terakhir
+                        </p>
+                    </div>
+                </div>
+                <div class="w-full relative h-64">
+                    <canvas id="weekly-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Quick Action Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+                <!-- Action 1: Catat Nutrisi -->
+                <a href="calculator.html"
+                    class="group relative overflow-hidden bg-white dark:bg-zinc-800 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-zinc-700 hover:shadow-xl hover:border-red-200 dark:hover:border-lime-900/50 hover:-translate-y-2 transition-all duration-300 flex flex-col items-center text-center">
+                    <div
+                        class="absolute -right-4 -top-4 w-32 h-32 bg-red-50 dark:bg-zinc-900/50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div
+                        class="w-20 h-20 bg-red-50 dark:bg-zinc-900 rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:rotate-12 transition-transform duration-300 shadow-inner z-10">
+                        🥩
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-3 z-10">Catat Nutrisi</h2>
+                    <p class="text-gray-500 dark:text-zinc-400 leading-relaxed z-10">
+                        Akses Kalkulator Protein untuk mencatat asupan makro berdasarkan data faktual.
+                    </p>
+                    <div
+                        class="mt-6 text-red-600 dark:text-lime-400 font-bold flex items-center gap-2 group-hover:gap-4 transition-all z-10">
+                        Hitung Sekarang <span class="text-xl">→</span>
+                    </div>
+                </a>
+
+                <!-- Action 2: Mulai Latihan -->
+                <a href="equipments.html"
+                    class="group relative overflow-hidden bg-white dark:bg-zinc-800 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-zinc-700 hover:shadow-xl hover:border-red-200 dark:hover:border-lime-900/50 hover:-translate-y-2 transition-all duration-300 flex flex-col items-center text-center">
+                    <div
+                        class="absolute -left-4 -bottom-4 w-32 h-32 bg-red-50 dark:bg-zinc-900/50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity">
+                    </div>
+                    <div
+                        class="w-20 h-20 bg-red-50 dark:bg-zinc-900 rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:-rotate-12 transition-transform duration-300 shadow-inner z-10">
+                        🏋️
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-3 z-10">Mulai Latihan</h2>
+                    <p class="text-gray-500 dark:text-zinc-400 leading-relaxed z-10">
+                        Lihat katalog jadwal dan fokus otot yang didesain khusus untuk progres Anda.
+                    </p>
+                    <div
+                        class="mt-6 text-red-600 dark:text-lime-400 font-bold flex items-center gap-2 group-hover:gap-4 transition-all z-10">
+                        Lihat Jadwal <span class="text-xl">→</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Accordion FAQ -->
+            <section class="mt-8 mb-12">
+                <h3
+                    class="text-2xl font-extrabold text-gray-800 dark:text-white mb-6 transition-colors duration-300 flex items-center gap-2">
+                    <span>💡</span> Info & Panduan Binaraga (FAQ)
+                </h3>
+                
+                <div class="space-y-8">
+                    <!-- Kategori: Latihan -->
+                    <div>
+                        <h4 class="text-xl font-bold text-red-600 dark:text-lime-400 mb-4 border-b border-gray-200 dark:border-zinc-700 pb-2 flex items-center gap-2">
+                            <span>🏋️</span> Seputar Latihan
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Seberapa sering saya harus latihan dalam seminggu?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Idealnya 3-5 kali seminggu, tergantung program yang Anda jalani. Pemula disarankan memulai dengan 3 hari Full Body, sedangkan yang sudah berpengalaman bisa memakai sistem split (seperti Push/Pull/Legs atau Upper/Lower) selama 4-6 hari.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apa itu Progressive Overload?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Kunci utama perkembangan otot. Ini adalah prinsip menambah beban, repetisi, atau intensitas secara bertahap dari waktu ke waktu agar otot terus mendapatkan stimulus baru untuk tumbuh lebih besar dan kuat.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Berapa lama durasi latihan yang ideal?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Sekitar 45-90 menit sudah sangat cukup. Kualitas repetisi dan intensitas latihan jauh lebih penting daripada berjam-jam nongkrong di gym. Latihan terlalu lama justru meningkatkan hormon kortisol yang dapat merusak otot.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Cardio sebaiknya sebelum atau sesudah angkat beban?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Selalu angkat beban terlebih dahulu saat energi Anda masih penuh (kecuali cardio ringan 5-10 menit untuk pemanasan). Lakukan cardio sesudahnya atau di hari yang terpisah agar performa angkatan Anda maksimal.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apakah saya harus berlatih sampai "Failure" (Gagal Angkat)?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Tidak harus di setiap set karena bisa menyebabkan kelelahan saraf (CNS fatigue). Namun, Anda harus berlatih mendekati failure, atau menyisakan 1-2 repetisi di "tangki" Anda untuk hasil hipertrofi terbaik.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Berapa lama waktu istirahat antar set?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Tergantung latihannya. Untuk gerakan berat (Compound seperti Squat/Deadlift) butuh 2-4 menit. Untuk gerakan spesifik (Isolation seperti Bicep Curl) cukup 60-90 detik. Jangan terburu-buru, istirahatlah sampai detak jantung stabil.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apa bedanya Free Weights (Dumbbell/Barbell) dan Mesin?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Free weights melatih otot penstabil dan keseimbangan tubuh. Mesin bagus untuk mengisolasi otot dengan lebih aman dan stabil tanpa memikirkan keseimbangan. Keduanya punya peran penting dalam program latihan.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kategori: Protein & Nutrisi -->
+                    <div>
+                        <h4 class="text-xl font-bold text-red-600 dark:text-lime-400 mb-4 border-b border-gray-200 dark:border-zinc-700 pb-2 flex items-center gap-2">
+                            <span>🥩</span> Protein & Nutrisi
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apakah target 150g protein berlaku untuk semua orang?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Angka 150g adalah target baseline rata-rata. Aturan umumnya, untuk memaksimalkan hipertrofi (pertumbuhan otot), konsumsilah sekitar 1.6 hingga 2.2 gram protein per kilogram berat badan Anda setiap hari.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apa bedanya Bulking dan Cutting?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        <strong>Bulking:</strong> Makan lebih banyak kalori dari yang dibakar (surplus) untuk membangun otot (dan sedikit lemak). <br>
+                                        <strong>Cutting:</strong> Makan lebih sedikit kalori dari yang dibakar (defisit) untuk memangkas lemak sambil mempertahankan otot.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Mengapa saya harus memakai Kalkulator Nutrisi PraxisFit?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Kebanyakan pemula menaksir asupan makanannya secara asal. Dengan mencatat makanan secara presisi di dashboard kami, Anda memastikan otot mendapat "bahan bangunan" yang cukup untuk tumbuh secara efektif tanpa tebak-tebakan.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Haruskah saya minum protein langsung setelah latihan (Anabolic Window)?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Itu lebih mengarah ke mitos. Selama Anda memenuhi total kebutuhan protein harian Anda, waktu meminumnya (timing) tidak terlalu berdampak signifikan. Meski begitu, minum shake setelah latihan sangat baik untuk kepraktisan.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Bolehkah makan fast-food/manis saat sedang Bulking (Dirty Bulking)?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Boleh sesekali (aturan 80% makanan utuh sehat, 20% bebas), tapi jika kalori berlebihnya terlalu ekstrem dan berasal dari junk food, yang bertambah justru adalah lemak, bukan massa otot murni.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apa makanan pre-workout (sebelum latihan) yang bagus?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Karbohidrat yang mudah dicerna seperti pisang, roti gandum, oatmeal, atau nasi putih, dikonsumsi sekitar 1-2 jam sebelum latihan akan memberikan energi penuh untuk angkatan Anda.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kategori: Tidur & Pemulihan -->
+                    <div>
+                        <h4 class="text-xl font-bold text-red-600 dark:text-lime-400 mb-4 border-b border-gray-200 dark:border-zinc-700 pb-2 flex items-center gap-2">
+                            <span>🛌</span> Tidur & Pemulihan (Recovery)
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Mengapa tidur sangat penting bagi otot?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Otot <strong>tidak</strong> tumbuh saat Anda mengangkat beban di gym; otot tumbuh saat Anda beristirahat. Pada saat tidur pulas (Deep Sleep), tubuh melepaskan Human Growth Hormone (HGH) yang krusial untuk perbaikan jaringan otot.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Berapa lama waktu tidur yang wajib dipenuhi?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Binaragawan atau individu yang aktif membutuhkan 7-9 jam tidur berkualitas per malam. Tidur kurang dari itu kronis akan menurunkan testosteron dan menghambat pemulihan.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Otot saya sangat pegal (DOMS), apakah boleh latihan lagi?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Delayed Onset Muscle Soreness (DOMS) adalah normal. Jika pegalnya sangat parah, latihlah kelompok otot yang lain, atau lakukan latihan ringan untuk melancarkan peredaran darah. Pastikan tidur dan nutrisi Anda optimal.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apa itu Active Recovery?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Melakukan aktivitas fisik ringan di hari libur latihan, seperti jalan kaki, berenang santai, atau bersepeda. Tujuannya memperlancar aliran darah yang membawa nutrisi ke otot tanpa menambah kerusakan otot (micro-tears).
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Bolehkah melatih bagian otot yang sama berturut-turut tiap hari?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Sangat tidak disarankan. Otot membutuhkan waktu pemulihan sekitar 48 hingga 72 jam agar sel-sel yang robek saat latihan bisa dibangun kembali lebih besar dan kuat.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kategori: Suplemen & Mitos -->
+                    <div>
+                        <h4 class="text-xl font-bold text-red-600 dark:text-lime-400 mb-4 border-b border-gray-200 dark:border-zinc-700 pb-2 flex items-center gap-2">
+                            <span>💊</span> Suplemen & Mitos
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apakah suplemen Whey/Mass Gainer itu wajib?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        <strong>TIDAK WAJIB.</strong> Makanan utuh (ayam, telur, daging, tempe) selalu yang terbaik. Suplemen dinamakan "suplemen" karena hanya berfungsi sebagai pelengkap jika asupan harian dari makanan masih kurang.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apa fungsi suplemen Creatine?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Creatine adalah suplemen paling banyak diteliti dan terbukti aman. Ia membantu memproduksi energi (ATP) saat angkat beban berat, meningkatkan tenaga, dan membuat otot terlihat lebih "penuh" karena retensi air di dalam sel otot (bukan di bawah kulit).
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Bisa nggak kecilin perut doang (Spot Reduction)?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        <strong>MITOS BESAR.</strong> Latihan sit-up 1000x tidak akan membakar lemak perut. Lemak menurun secara proporsional di seluruh tubuh melalui diet defisit kalori. Genetik Anda yang menentukan area mana yang lemaknya hilang duluan/belakangan.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apakah wanita yang angkat beban akan berotot seperti pria?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        <strong>MITOS.</strong> Wanita tidak memiliki kadar hormon testosteron yang cukup tinggi untuk membentuk otot sebesar pria secara natural. Angkat beban justru akan membuat tubuh wanita menjadi lebih kencang (toned) dan proporsional.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apakah suplemen BCAA sangat penting?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        BCAA (Branched-Chain Amino Acids) terkandung secara alami pada daging dan whey protein. Jika Anda sudah mengonsumsi cukup protein setiap hari, membeli BCAA tambahan seringkali membuang-buang uang.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apakah minuman Pre-Workout itu aman?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Aman jika digunakan sesuai dosis. Kandungan utamanya adalah kafein untuk energi fokus, dan bahan untuk "pump" otot (aliran darah). Hindari meminumnya terlalu sore atau malam agar tidak mengganggu siklus tidur Anda.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kategori: Cedera & Keamanan -->
+                    <div>
+                        <h4 class="text-xl font-bold text-red-600 dark:text-lime-400 mb-4 border-b border-gray-200 dark:border-zinc-700 pb-2 flex items-center gap-2">
+                            <span>🚑</span> Cedera & Keamanan
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Bagaimana cara terbaik mencegah cedera?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Selalu mulai dengan pemanasan (dynamic stretching atau repetisi ringan). Selain itu, "tinggalkan ego Anda di depan pintu gym" — fokuslah pada postur (form) angkatan yang benar, bukan semata-mata pamer beban terberat.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Saya merasakan nyeri tiba-tiba, apakah harus tetap latihan?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Berhenti segera! Anda harus bisa membedakan antara "rasa panas" (muscle burn) akibat kelelahan otot, dengan rasa nyeri tajam (sharp pain) yang menusuk sendi atau tulang. Nyeri tajam adalah indikasi awal cedera.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kategori: Mindset & Konsistensi -->
+                    <div>
+                        <h4 class="text-xl font-bold text-red-600 dark:text-lime-400 mb-4 border-b border-gray-200 dark:border-zinc-700 pb-2 flex items-center gap-2">
+                            <span>🧠</span> Mindset & Konsistensi
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Kapan saya mulai bisa melihat hasilnya?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Perubahan tenaga akan terasa di 4 minggu pertama. Dalam 2 bulan, Anda akan mulai melihat perubahan bentuk di cermin. Butuh sekitar 3-6 bulan bagi orang di sekitar Anda untuk mulai menyadari dan berkomentar. Konsistensi adalah kunci.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apa yang harus saya lakukan saat sedang tidak ada motivasi?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        <strong>Disiplin > Motivasi.</strong> Motivasi itu fluktuatif, jangan diandalkan. Jadikan pergi ke gym atau berolahraga layaknya sikat gigi—sebuah keharusan. Datang saja ke sana, begitu Anda mulai pemanasan, biasanya hormon endorfin akan membuat Anda semangat dengan sendirinya.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Saya malu berolahraga di gym karena badan saya belum bagus.</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Semua orang di gym pernah menjadi pemula. Faktanya, 99% orang di gym terlalu sibuk mengurus latihan mereka sendiri untuk menghakimi orang lain.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kategori: Latihan di Rumah (Home Workout) -->
+                    <div>
+                        <h4 class="text-xl font-bold text-red-600 dark:text-lime-400 mb-4 border-b border-gray-200 dark:border-zinc-700 pb-2 flex items-center gap-2">
+                            <span>🏡</span> Latihan di Rumah (Home Workout)
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Apakah saya bisa membentuk otot hanya dengan latihan beban tubuh (Kalistenik) di rumah?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Tentu bisa. Otot tidak tahu bedanya beban besi atau beban badan sendiri. Asalkan Anda terus menambah tingkat kesulitan (Progressive Overload), otot akan tumbuh.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Alat olahraga apa yang paling wajib dimiliki untuk pemula di rumah?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Tiga alat paling direkomendasikan: Sepasang dumbbell yang bisa dibongkar pasang beratnya (adjustable), matras yoga, dan resistance band.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Bagaimana cara melatih otot punggung jika tidak punya pull-up bar di rumah?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Gunakan benda di sekitar Anda. Anda bisa melakukan gerakan tarikan menggunakan meja kuat, menggunakan resistance band di engsel pintu, atau latihan "Superman" di lantai.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
+                                <button class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
+                                    <span>Saya tidak punya banyak ruang (kos-kosan), olahraga apa yang cocok?</span>
+                                    <span class="faq-icon text-red-600 dark:text-lime-400 transform transition-transform duration-300 text-xl">+</span>
+                                </button>
+                                <div class="faq-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30">
+                                    <div class="p-5 text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
+                                        Latihan HIIT (High-Intensity Interval Training) atau senam lantai tanpa alat. Kombinasi gerakan Burpees, Jumping Jacks, dan Mountain Climbers selama 15 menit sudah cukup membakar kalori.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        checkAuth();
+    </script>
+    <script src="assets/js/dashboard.js"></script>
+</body>
+
+</html>

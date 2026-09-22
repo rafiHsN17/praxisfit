@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - PraxisFit</title>
+    <!-- Tailwind CDN dengan Konfigurasi Dark Mode -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body class="bg-slate-50 text-slate-800 dark:bg-zinc-900 dark:text-zinc-200 transition-colors duration-200 antialiased">
+
+    <!-- Navbar -->
+    <nav class="bg-white dark:bg-zinc-950 border-b border-gray-200 dark:border-zinc-800 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">💪</span>
+                <span class="font-extrabold text-xl tracking-tight text-red-600 dark:text-lime-400">PraxisFit</span>
+            </div>
+            <div class="flex gap-4 items-center">
+                <a href="index.html"
+                    class="font-medium hover:text-red-600 dark:hover:text-lime-400 transition">Dashboard</a>
+                <a href="equipments.html"
+                    class="font-medium hover:text-red-600 dark:hover:text-lime-400 transition">Jadwal</a>
+                <button id="theme-toggle"
+                    class="p-2 rounded-lg bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 transition">
+                    <span id="theme-icon">🌙</span>
+                </button>
+                <button id="btn-logout"
+                    class="bg-red-50 text-red-600 dark:bg-zinc-800 dark:text-lime-400 px-4 py-2 rounded-lg font-bold hover:bg-red-100 dark:hover:bg-zinc-700 transition">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Konten Utama -->
+    <main class="max-w-4xl mx-auto p-6 mt-6">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold">Kelola Jadwal Latihan</h1>
+            <p class="text-gray-500 dark:text-zinc-400 mt-1">Panel khusus admin untuk mengatur data alat dan repetisi.
+            </p>
+        </div>
+
+        <!-- Form Input -->
+        <div
+            class="bg-white dark:bg-zinc-950 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 mb-8">
+            <h3 id="form-title" class="font-bold mb-4 text-red-600 dark:text-lime-400">➕ Tambah Jadwal Baru</h3>
+            <form id="admin-form" class="space-y-4">
+                <input type="hidden" id="edit-id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="input-nama" placeholder="Nama Alat (Cth: Bench Press)" required
+                        class="w-full border border-gray-300 dark:border-zinc-700 bg-transparent p-3 rounded-xl focus:ring-2 focus:ring-red-500 dark:focus:ring-lime-400 outline-none">
+                    <input type="text" id="input-fokus" placeholder="Fokus Otot (Cth: Dada)" required
+                        class="w-full border border-gray-300 dark:border-zinc-700 bg-transparent p-3 rounded-xl focus:ring-2 focus:ring-red-500 dark:focus:ring-lime-400 outline-none">
+                    <input type="text" id="input-durasi" placeholder="Durasi (Cth: 4 Set x 12 Reps)" required
+                        class="w-full border border-gray-300 dark:border-zinc-700 bg-transparent p-3 rounded-xl focus:ring-2 focus:ring-red-500 dark:focus:ring-lime-400 outline-none">
+                    <input type="text" id="input-icon" placeholder="Icon Emoji (Cth: 🏋️)" required
+                        class="w-full border border-gray-300 dark:border-zinc-700 bg-transparent p-3 rounded-xl focus:ring-2 focus:ring-red-500 dark:focus:ring-lime-400 outline-none">
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" id="btn-submit"
+                        class="flex-1 bg-red-600 dark:bg-lime-400 text-white dark:text-zinc-900 font-bold p-3 rounded-xl hover:bg-red-700 dark:hover:bg-lime-500 transition">
+                        Simpan Data
+                    </button>
+                    <button type="button" id="btn-cancel"
+                        class="hidden flex-1 bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 font-bold p-3 rounded-xl hover:bg-gray-300 dark:hover:bg-zinc-700 transition">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tabel Data -->
+        <div
+            class="bg-white dark:bg-zinc-950 rounded-2xl shadow-sm border border-gray-100 dark:border-zinc-800 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-50 dark:bg-zinc-900 border-b border-gray-100 dark:border-zinc-800">
+                        <tr>
+                            <th class="p-4 font-semibold text-sm">Alat</th>
+                            <th class="p-4 font-semibold text-sm">Fokus</th>
+                            <th class="p-4 font-semibold text-sm">Durasi / Reps</th>
+                            <th class="p-4 font-semibold text-sm text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="divide-y divide-gray-100 dark:divide-zinc-800">
+                        <!-- Data akan dirender dari JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="empty-state" class="hidden p-10 text-center text-gray-400">
+                Belum ada data jadwal latihan.
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/admin.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+<svg viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-[#0dfb14] fill-current">
+    <!-- PraxisFit P Base -->
+    <path d="M117.8 200 H163.4 L185.3 125.7 H214.5 C249.2 125.7 268 111.8 274.6 85.9 C282.3 56 261 40 224.2 40 H164.7 L117.8 200 Z M195.1 92.5 H175 L186.2 55.4 H203.4 C218.4 55.4 226.7 60 223.3 73.1 C220 86.1 210.1 92.5 195.1 92.5 Z" fill="currentColor"/>
+    <!-- Lightning Bolt Cut -->
+    <polygon points="50,45 170,105 145,115 315,185 165,130 190,120" fill="currentColor" />
+</svg>
