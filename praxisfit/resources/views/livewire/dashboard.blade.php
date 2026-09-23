@@ -6,16 +6,16 @@
             PRX
         </div>
 
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 dark:from-emerald-400 dark:via-teal-400 dark:to-emerald-500"></div>
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-amber-500 to-red-600 dark:from-emerald-400 dark:via-teal-400 dark:to-emerald-500"></div>
 
         <div class="relative z-10 max-w-3xl space-y-6">
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider border border-emerald-200 dark:border-emerald-400/20 shadow-sm">
-                <svg class="w-3 h-3 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-50 dark:bg-emerald-400/10 text-red-700 dark:text-emerald-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider border border-red-200 dark:border-emerald-400/20 shadow-sm">
+                <svg class="w-3 h-3 text-red-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 <span>Command Center Aktif</span>
             </div>
             
             <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-zinc-900 dark:text-zinc-100 leading-tight transition-colors">
-                Siap Menghancurkan <br class="hidden sm:block"><span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500 dark:from-emerald-400 dark:to-teal-400">Batasmu Hari Ini?</span>
+                Siap Menghancurkan <br class="hidden sm:block"><span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500 dark:from-emerald-400 dark:to-teal-400">Batasmu Hari Ini?</span>
             </h1>
 
             <p class="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed transition-colors max-w-2xl">
@@ -24,7 +24,7 @@
 
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-4">
                 <a href="{{ url('/rutinku') }}" wire:navigate 
-                   class="px-6 py-4 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:text-white dark:hover:bg-emerald-600 font-extrabold text-sm uppercase tracking-wider shadow-lg hover:shadow-emerald-500/30 dark:hover:shadow-emerald-400/30 transition-all duration-300 transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2">
+                   class="px-6 py-4 rounded-2xl bg-red-600 text-white hover:bg-red-700 dark:bg-emerald-500 dark:text-white dark:hover:bg-emerald-600 font-extrabold text-sm uppercase tracking-wider shadow-lg hover:shadow-red-500/30 dark:hover:shadow-emerald-400/30 transition-all duration-300 transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2">
                     <span>Mulai Latihan Sekarang</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 </a>
@@ -42,13 +42,13 @@
         
         <!-- CARD 1: Nutrisi -->
         <a href="{{ url('/kalkulator') }}" wire:navigate 
-           class="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-3xl p-8 border border-zinc-200/80 dark:border-zinc-800/80 shadow-lg hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-500/50 dark:hover:border-emerald-400/50 transition-all duration-500 flex flex-col justify-between group relative overflow-hidden">
+           class="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-3xl p-8 border border-zinc-200/80 dark:border-zinc-800/80 shadow-lg hover:-translate-y-2 hover:shadow-2xl hover:border-red-500/50 dark:hover:border-emerald-400/50 transition-all duration-500 flex flex-col justify-between group relative overflow-hidden">
             
-            <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 dark:bg-emerald-400/5 rounded-full blur-3xl -translate-y-10 translate-x-10 group-hover:bg-emerald-500/10 dark:group-hover:bg-emerald-400/10 transition-colors duration-500"></div>
+            <div class="absolute top-0 right-0 w-32 h-32 bg-red-500/5 dark:bg-emerald-400/5 rounded-full blur-3xl -translate-y-10 translate-x-10 group-hover:bg-red-500/10 dark:group-hover:bg-emerald-400/10 transition-colors duration-500"></div>
 
             <div class="space-y-5 relative z-10">
                 <div class="flex justify-between items-start">
-                    <span class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/20 dark:to-emerald-500/5 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-200 dark:border-emerald-500/20 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 shadow-sm">
+                    <span class="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-100 to-red-50 dark:from-emerald-500/20 dark:to-emerald-500/5 text-red-600 dark:text-emerald-400 flex items-center justify-center border border-red-200 dark:border-emerald-500/20 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 shadow-sm">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </span>
                     <span class="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-extrabold text-[10px] uppercase tracking-wider border border-zinc-200 dark:border-zinc-700">
@@ -59,7 +59,7 @@
                 <div>
                     <span class="block text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Total Protein Masuk</span>
                     <div class="flex items-baseline gap-2">
-                        <h3 class="text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                        <h3 class="text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-red-600 dark:group-hover:text-emerald-400 transition-colors">
                             {{ $totalProteinToday }}<span class="text-xl text-zinc-400 dark:text-zinc-600 font-bold">/{{ $targetProtein }}</span>
                         </h3>
                         <span class="text-sm font-bold text-zinc-500">g</span>
@@ -72,13 +72,13 @@
                         $percentage = $targetProtein > 0 ? min(100, round(($totalProteinToday / $targetProtein) * 100)) : 0;
                     @endphp
                     <div class="w-full bg-zinc-100 dark:bg-zinc-950 h-3 rounded-full overflow-hidden p-0.5 border border-zinc-200 dark:border-zinc-800 shadow-inner">
-                        <div class="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 dark:from-emerald-500 dark:to-teal-400 rounded-full transition-all duration-1000 ease-out relative overflow-hidden" 
+                        <div class="h-full bg-gradient-to-r from-red-500 to-red-600 dark:from-emerald-500 dark:to-teal-400 rounded-full transition-all duration-1000 ease-out relative overflow-hidden" 
                              style="width: {{ $percentage }}%">
                         </div>
                     </div>
                     <div class="flex justify-between items-center text-xs font-bold">
                         <span class="text-zinc-500">Pencapaian Target</span>
-                        <span class="text-emerald-600 dark:text-emerald-400">{{ $percentage }}%</span>
+                        <span class="text-red-600 dark:text-emerald-400">{{ $percentage }}%</span>
                     </div>
                 </div>
             </div>
@@ -86,13 +86,13 @@
 
         <!-- CARD 2: Jadwal Latihan -->
         <a href="{{ url('/rutinku') }}" wire:navigate 
-           class="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-3xl p-8 border border-zinc-200/80 dark:border-zinc-800/80 shadow-lg hover:-translate-y-2 hover:shadow-2xl hover:border-teal-500/50 dark:hover:border-teal-400/50 transition-all duration-500 flex flex-col justify-between group relative overflow-hidden">
+           class="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-3xl p-8 border border-zinc-200/80 dark:border-zinc-800/80 shadow-lg hover:-translate-y-2 hover:shadow-2xl hover:border-amber-500/50 dark:hover:border-teal-400/50 transition-all duration-500 flex flex-col justify-between group relative overflow-hidden">
             
-            <div class="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 dark:bg-teal-400/5 rounded-full blur-3xl -translate-y-10 translate-x-10 group-hover:bg-teal-500/10 dark:group-hover:bg-teal-400/10 transition-colors duration-500"></div>
+            <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 dark:bg-teal-400/5 rounded-full blur-3xl -translate-y-10 translate-x-10 group-hover:bg-amber-500/10 dark:group-hover:bg-teal-400/10 transition-colors duration-500"></div>
 
             <div class="space-y-5 relative z-10">
                 <div class="flex justify-between items-start">
-                    <span class="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 dark:from-teal-500/20 dark:to-teal-500/5 text-teal-600 dark:text-teal-400 flex items-center justify-center border border-teal-200 dark:border-teal-500/20 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500 shadow-sm">
+                    <span class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-50 dark:from-teal-500/20 dark:to-teal-500/5 text-amber-600 dark:text-teal-400 flex items-center justify-center border border-amber-200 dark:border-teal-500/20 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500 shadow-sm">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     </span>
                     <span class="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-extrabold text-[10px] uppercase tracking-wider border border-zinc-200 dark:border-zinc-700">
@@ -103,7 +103,7 @@
                 <div>
                     <span class="block text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Sesi Terjadwal</span>
                     <div class="flex items-baseline gap-2">
-                        <h3 class="text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+                        <h3 class="text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-amber-600 dark:group-hover:text-teal-400 transition-colors">
                             {{ $totalRoutines ?? 0 }}
                         </h3>
                         <span class="text-sm font-bold text-zinc-500">Sesi</span>
@@ -115,7 +115,7 @@
                 </p>
             </div>
 
-            <div class="mt-8 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-sm font-bold text-teal-600 dark:text-teal-400 group-hover:translate-x-1 transition-transform">
+            <div class="mt-8 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-sm font-bold text-amber-600 dark:text-teal-400 group-hover:translate-x-1 transition-transform">
                 <span>Kelola Jadwal</span>
                 <span>&rarr;</span>
             </div>
@@ -195,7 +195,7 @@
         <!-- Mini FAQ -->
         <div class="lg:col-span-2 bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xl">
             <h3 class="text-2xl font-extrabold text-zinc-900 dark:text-zinc-100 mb-6 flex items-center gap-3">
-                <span class="bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-2 rounded-xl">
+                <span class="bg-red-100 dark:bg-emerald-500/20 text-red-600 dark:text-emerald-400 p-2 rounded-xl">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </span>
                 Edukasi Kebugaran Cepat
@@ -206,7 +206,7 @@
                 <div class="border border-zinc-200 dark:border-zinc-700/50 rounded-2xl overflow-hidden transition-all duration-300">
                     <button @click="activeAccordion = activeAccordion === 'faq1' ? '' : 'faq1'" class="w-full flex justify-between items-center p-5 text-left font-bold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors focus:outline-none">
                         <span>Seberapa sering saya harus latihan dalam seminggu?</span>
-                        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 transform transition-transform duration-300" :class="{'rotate-180': activeAccordion === 'faq1'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg class="w-5 h-5 text-red-600 dark:text-emerald-400 transform transition-transform duration-300" :class="{'rotate-180': activeAccordion === 'faq1'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div x-show="activeAccordion === 'faq1'" x-collapse class="bg-zinc-50 dark:bg-zinc-900/30">
                         <div class="p-5 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed border-t border-zinc-100 dark:border-zinc-800">
@@ -220,7 +220,7 @@
                 <div class="border border-zinc-200 dark:border-zinc-700/50 rounded-2xl overflow-hidden transition-all duration-300">
                     <button @click="activeAccordion = activeAccordion === 'faq2' ? '' : 'faq2'" class="w-full flex justify-between items-center p-5 text-left font-bold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors focus:outline-none">
                         <span>Apakah suplemen Whey Protein itu wajib?</span>
-                        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 transform transition-transform duration-300" :class="{'rotate-180': activeAccordion === 'faq2'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg class="w-5 h-5 text-red-600 dark:text-emerald-400 transform transition-transform duration-300" :class="{'rotate-180': activeAccordion === 'faq2'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div x-show="activeAccordion === 'faq2'" x-collapse class="bg-zinc-50 dark:bg-zinc-900/30">
                         <div class="p-5 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed border-t border-zinc-100 dark:border-zinc-800">
@@ -232,7 +232,7 @@
             </div>
             
             <div class="mt-6 text-center">
-                <a href="{{ url('/faq') }}" wire:navigate class="inline-flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors hover:underline">
+                <a href="{{ url('/faq') }}" wire:navigate class="inline-flex items-center gap-2 text-sm font-bold text-red-600 dark:text-emerald-400 hover:text-red-700 dark:hover:text-emerald-300 transition-colors hover:underline">
                     Lihat Semua Pusat Bantuan
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                 </a>

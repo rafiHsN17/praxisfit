@@ -3,16 +3,16 @@
     <!-- HEADER CATALOG -->
     <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white to-zinc-50 dark:from-zinc-900 dark:to-black p-8 sm:p-12 border border-zinc-200 dark:border-zinc-800 shadow-xl dark:shadow-2xl">
         <!-- Abstract Background Shapes -->
-        <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 blur-3xl pointer-events-none"></div>
-        <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-full bg-teal-500/10 dark:bg-teal-500/20 blur-3xl pointer-events-none"></div>
+        <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-red-500/10 dark:bg-emerald-500/20 blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-full bg-amber-500/10 dark:bg-teal-500/20 blur-3xl pointer-events-none"></div>
         
         <div class="relative z-10 space-y-4">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 dark:bg-emerald-500/10 border border-red-200 dark:border-emerald-500/20 text-red-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-widest mb-2 shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
                 Database Gerakan
             </div>
             <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-zinc-900 dark:text-white drop-shadow-sm dark:drop-shadow-md">
-                Katalog <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500 dark:from-emerald-400 dark:to-teal-400">Latihan</span>
+                Katalog <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-amber-500 dark:from-emerald-400 dark:to-teal-400">Latihan</span>
             </h1>
             <p class="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl font-medium">
                 Koleksi panduan biomekanika gerakan yang tervalidasi sains. Temukan gerakan yang tepat untuk hipertrofi maksimal berdasarkan kelompok otot.
@@ -24,14 +24,14 @@
     <div class="space-y-6">
         <!-- Search Bar -->
         <div class="max-w-2xl relative group">
-            <div class="absolute -inset-1 bg-gradient-to-r from-emerald-600 to-teal-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
+            <div class="absolute -inset-1 bg-gradient-to-r from-red-600 to-amber-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
             <div class="relative">
                 <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-zinc-400">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M16.5 10.5a6 6 0 11-12 0 6 6 0 0112 0z"/></svg>
                 </span>
                 <input type="text" wire:model.live.debounce.300ms="search" 
                        placeholder="Cari gerakan (contoh: Bench Press, Squat)..." 
-                       class="w-full pl-12 pr-4 py-4 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md text-zinc-900 dark:text-white rounded-xl border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/50 shadow-sm transition-all text-base placeholder-zinc-400">
+                       class="w-full pl-12 pr-4 py-4 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md text-zinc-900 dark:text-white rounded-xl border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/50 shadow-sm transition-all text-base placeholder-zinc-400">
             </div>
         </div>
 
@@ -44,7 +44,7 @@
             </button>
             @foreach($muscleTargets as $muscle)
                 <button type="button" wire:click="$set('filterMuscle', '{{ $muscle }}')" 
-                        class="px-5 py-2.5 rounded-xl text-sm shrink-0 transition-all duration-300 font-bold shadow-sm {{ $filterMuscle === $muscle ? 'bg-gradient-to-r from-emerald-600 to-teal-500 text-white border-none scale-105 shadow-emerald-500/25 shadow-lg' : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 hover:text-emerald-600 dark:hover:bg-zinc-800 dark:hover:text-emerald-400' }}">
+                        class="px-5 py-2.5 rounded-xl text-sm shrink-0 transition-all duration-300 font-bold shadow-sm {{ $filterMuscle === $muscle ? 'bg-gradient-to-r from-red-600 to-amber-500 text-white border-none scale-105 shadow-red-500/25 shadow-lg' : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 hover:text-red-600 dark:hover:bg-zinc-800 dark:hover:text-emerald-400' }}">
                     {{ $muscle }}
                 </button>
             @endforeach
@@ -67,12 +67,12 @@
                  }"
                  @mouseenter="if(images.length > 1) { timer = setInterval(() => { frame = (frame + 1) % images.length }, 600) }"
                  @mouseleave="clearInterval(timer); frame = 0"
-                 class="group relative bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-200/80 dark:border-zinc-800/80 hover:border-emerald-500/50 dark:hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-500 hover:-translate-y-2 cursor-pointer flex flex-col">
+                 class="group relative bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-200/80 dark:border-zinc-800/80 hover:border-red-500/50 dark:hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-500 hover:-translate-y-2 cursor-pointer flex flex-col">
                 
                 <!-- Media -->
                 <div class="relative overflow-hidden bg-zinc-100 dark:bg-zinc-950 h-56 w-full flex items-center justify-center p-4">
                     <!-- Subtle background glow on hover -->
-                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/0 to-teal-500/0 group-hover:from-emerald-500/10 group-hover:to-teal-500/10 transition-colors duration-500"></div>
+                    <div class="absolute inset-0 bg-gradient-to-br from-red-500/0 to-amber-500/0 group-hover:from-red-500/10 group-hover:to-amber-500/10 transition-colors duration-500"></div>
                     
                     <img :src="images[frame]" src="{{ $exercise->image_1 ?? $exercise->icon }}" class="w-full h-full object-contain filter drop-shadow-md transition-transform duration-700 group-hover:scale-110" alt="{{ $exercise->name }}">
                     
@@ -97,7 +97,7 @@
                                 </span>
                             @endif
                         </div>
-                        <h3 class="text-lg font-bold text-zinc-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                        <h3 class="text-lg font-bold text-zinc-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-emerald-400 transition-colors">
                             {{ $exercise->name }}
                         </h3>
                     </div>
@@ -126,15 +126,15 @@
 
     <!-- Context-Specific FAQ -->
     <section class="mt-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full"></div>
+        <div class="absolute top-0 right-0 w-32 h-32 bg-red-500/5 blur-3xl rounded-full"></div>
         <h3 class="text-3xl font-black text-zinc-900 dark:text-white mb-8 flex items-center gap-3 relative z-10">
-            <svg class="w-8 h-8 text-emerald-600 dark:text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Fakta Medis Latihan
+            <svg class="w-8 h-8 text-red-600 dark:text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Fakta Medis Latihan
         </h3>
         <div class="space-y-4 relative z-10" x-data="{ activeAccordion: '' }">
-            <div class="group bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl overflow-hidden transition-all duration-300 hover:border-emerald-500/30 hover:shadow-md">
+            <div class="group bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl overflow-hidden transition-all duration-300 hover:border-red-500/30 hover:shadow-md">
                 <button @click="activeAccordion = activeAccordion === 'faq1' ? '' : 'faq1'" class="w-full flex justify-between items-center p-6 text-left font-bold text-zinc-900 dark:text-white focus:outline-none">
                     <span class="text-lg">Mengapa set dan repetisi sangat penting?</span>
-                    <span class="w-8 h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-emerald-600 dark:text-emerald-500 transform transition-transform duration-500 shadow-sm border border-zinc-100 dark:border-zinc-700" :class="{'rotate-180': activeAccordion === 'faq1'}">
+                    <span class="w-8 h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-red-600 dark:text-emerald-500 transform transition-transform duration-500 shadow-sm border border-zinc-100 dark:border-zinc-700" :class="{'rotate-180': activeAccordion === 'faq1'}">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                     </span>
                 </button>
@@ -149,10 +149,10 @@
                 </div>
             </div>
 
-            <div class="group bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl overflow-hidden transition-all duration-300 hover:border-emerald-500/30 hover:shadow-md">
+            <div class="group bg-zinc-50 dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl overflow-hidden transition-all duration-300 hover:border-red-500/30 hover:shadow-md">
                 <button @click="activeAccordion = activeAccordion === 'faq2' ? '' : 'faq2'" class="w-full flex justify-between items-center p-6 text-left font-bold text-zinc-900 dark:text-white focus:outline-none">
                     <span class="text-lg">Apakah saya harus melatih otot yang sama tiap hari?</span>
-                    <span class="w-8 h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-emerald-600 dark:text-emerald-500 transform transition-transform duration-500 shadow-sm border border-zinc-100 dark:border-zinc-700" :class="{'rotate-180': activeAccordion === 'faq2'}">
+                    <span class="w-8 h-8 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-red-600 dark:text-emerald-500 transform transition-transform duration-500 shadow-sm border border-zinc-100 dark:border-zinc-700" :class="{'rotate-180': activeAccordion === 'faq2'}">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                     </span>
                 </button>
@@ -232,7 +232,7 @@
                             <!-- Header -->
                             <div class="space-y-3">
                                 <div class="flex items-center gap-3">
-                                    <span class="px-3 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold text-xs uppercase tracking-widest">{{ $selectedExercise->target_muscle }}</span>
+                                    <span class="px-3 py-1 rounded-lg bg-red-100 dark:bg-emerald-500/20 text-red-700 dark:text-emerald-400 font-bold text-xs uppercase tracking-widest">{{ $selectedExercise->target_muscle }}</span>
                                     <span class="px-3 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold text-xs uppercase tracking-widest">{{ $selectedExercise->difficulty ?? 'Menengah' }}</span>
                                 </div>
                                 <h3 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
@@ -256,7 +256,7 @@
 
                                 <div>
                                     <h4 class="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                        <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                                         Instruksi Eksekusi
                                     </h4>
                                     
@@ -289,7 +289,7 @@
                                                 $text = htmlspecialchars($item, ENT_QUOTES);
                                                 foreach($terms as $term => $def) {
                                                     $pattern = '/\b(' . preg_quote($term, '/') . ')\b/i';
-                                                    $replacement = '<span @click.stop="activeTerm = \'$1\'; activeDef = \'' . addslashes($def) . '\'; termModalOpen = true;" class="cursor-pointer border-b-2 border-dashed border-emerald-400 text-emerald-600 dark:text-emerald-400 font-bold hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors" title="Klik untuk penjelasan medis">$1</span>';
+                                                    $replacement = '<span @click.stop="activeTerm = \'$1\'; activeDef = \'' . addslashes($def) . '\'; termModalOpen = true;" class="cursor-pointer border-b-2 border-dashed border-red-400 text-red-600 dark:text-emerald-400 font-bold hover:bg-red-50 dark:hover:bg-emerald-500/10 transition-colors" title="Klik untuk penjelasan medis">$1</span>';
                                                     $text = preg_replace($pattern, $replacement, $text);
                                                 }
                                                 return $text;
@@ -337,14 +337,14 @@
                      class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-2xl rounded-2xl p-6 max-w-sm w-full relative overflow-hidden">
                     
                     <!-- Decorative Element -->
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-red-500/10 rounded-full blur-2xl"></div>
 
                     <button @click="termModalOpen = false" class="absolute top-4 right-4 text-zinc-400 hover:text-zinc-900 dark:hover:text-white bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 p-2 rounded-full transition-all">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
 
                     <div class="flex items-center gap-3 mb-4 relative z-10">
-                        <span class="text-white bg-gradient-to-br from-emerald-500 to-teal-500 p-2 rounded-xl shadow-lg shadow-emerald-500/30">
+                        <span class="text-white bg-gradient-to-br from-red-500 to-amber-500 p-2 rounded-xl shadow-lg shadow-red-500/30">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </span>
                         <h4 class="font-black text-zinc-900 dark:text-white capitalize text-xl tracking-tight" x-text="activeTerm"></h4>

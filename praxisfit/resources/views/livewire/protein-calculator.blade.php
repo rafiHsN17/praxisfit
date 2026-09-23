@@ -14,7 +14,7 @@
         </div>
         <div class="text-center">
             <p class="text-sm text-gray-500 dark:text-zinc-400 font-medium uppercase tracking-wide">Konsumsi Hari Ini</p>
-            <p class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1"><span>{{ number_format($this->totalAchieved ?? 0, 1) }}</span><span class="text-lg font-medium">g</span></p>
+            <p class="text-3xl font-extrabold text-red-600 dark:text-emerald-400 mt-1"><span>{{ number_format($this->totalAchieved ?? 0, 1) }}</span><span class="text-lg font-medium">g</span></p>
         </div>
         <div class="text-center md:text-right">
             <p class="text-sm text-gray-500 dark:text-zinc-400 font-medium uppercase tracking-wide">Sisa / Kurang</p>
@@ -24,16 +24,16 @@
                 $remaining = $target - $achieved;
             @endphp
             @if($remaining <= 0)
-                <p class="text-3xl font-extrabold text-teal-500 mt-1"><span>Tercapai!</span></p>
+                <p class="text-3xl font-extrabold text-amber-500 mt-1"><span>Tercapai!</span></p>
             @else
-                <p class="text-3xl font-extrabold text-teal-500 dark:text-teal-400 mt-1"><span>{{ number_format($remaining, 1) }}</span><span class="text-lg font-medium">g</span></p>
+                <p class="text-3xl font-extrabold text-amber-500 dark:text-teal-400 mt-1"><span>{{ number_format($remaining, 1) }}</span><span class="text-lg font-medium">g</span></p>
             @endif
         </div>
     </div>
 
     <!-- Session Flash Notifications -->
     @if(session('success'))
-        <div class="p-4 bg-emerald-50 dark:bg-lime-900/30 border border-emerald-200 dark:border-lime-700 text-emerald-700 dark:text-lime-300 rounded-xl font-medium flex items-center gap-2 shadow-sm transition-all animate-fade-in">
+        <div class="p-4 bg-red-50 dark:bg-lime-900/30 border border-red-200 dark:border-lime-700 text-red-700 dark:text-lime-300 rounded-xl font-medium flex items-center gap-2 shadow-sm transition-all animate-fade-in">
             <span>{{ session('success') }}</span>
         </div>
     @endif
@@ -47,17 +47,17 @@
         <!-- LEFT COLUMN: Input Form -->
         <div class="md:col-span-1 bg-white dark:bg-zinc-800 p-6 rounded-2xl border border-gray-100 dark:border-zinc-700 shadow-sm h-fit space-y-5 transition-colors duration-300">
             <div class="flex justify-between items-center border-b border-gray-100 dark:border-zinc-700 pb-3">
-                <h3 class="font-bold text-emerald-600 dark:text-emerald-400 transition-colors duration-300 flex items-center gap-2">
+                <h3 class="font-bold text-red-600 dark:text-emerald-400 transition-colors duration-300 flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                     Log Protein
                 </h3>
-                <span class="text-sm font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-3 py-1.5 rounded-lg transition-colors duration-300">{{ $this->calculatedProtein ?? 0 }}g</span>
+                <span class="text-sm font-bold bg-red-100 dark:bg-emerald-900/30 text-red-700 dark:text-emerald-400 px-3 py-1.5 rounded-lg transition-colors duration-300">{{ $this->calculatedProtein ?? 0 }}g</span>
             </div>
 
             <form wire:submit.prevent="saveLog" class="space-y-4">
                 <div>
                     <input type="date" wire:model.live="tanggal" 
-                           class="w-full border border-gray-200 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-900/50 text-slate-800 dark:text-white p-3 rounded-xl focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 outline-none transition-colors duration-300">
+                           class="w-full border border-gray-200 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-900/50 text-slate-800 dark:text-white p-3 rounded-xl focus:ring-2 focus:ring-red-500 dark:focus:ring-emerald-400 outline-none transition-colors duration-300">
                 </div>
 
                 <div x-data="{ 
@@ -84,9 +84,9 @@
                 >
                     <!-- Trigger Button -->
                     <button type="button" @click="open = !open" 
-                            class="w-full flex justify-between items-center border border-gray-200 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-900/50 text-slate-800 dark:text-white p-3 rounded-xl focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 outline-none transition-all duration-300 text-left shadow-sm hover:border-emerald-300 dark:hover:border-emerald-500/50">
+                            class="w-full flex justify-between items-center border border-gray-200 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-900/50 text-slate-800 dark:text-white p-3 rounded-xl focus:ring-2 focus:ring-red-500 dark:focus:ring-emerald-400 outline-none transition-all duration-300 text-left shadow-sm hover:border-red-300 dark:hover:border-emerald-500/50">
                         <span x-text="selectedLabel" class="truncate font-medium text-sm"></span>
-                        <svg class="w-5 h-5 text-gray-400 transition-transform duration-300" :class="{'rotate-180 text-emerald-500 dark:text-emerald-400': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg class="w-5 h-5 text-gray-400 transition-transform duration-300" :class="{'rotate-180 text-red-500 dark:text-emerald-400': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
 
                     <!-- Dropdown Menu -->
@@ -102,16 +102,16 @@
                         
                         <!-- Search Box (Bonus UX) -->
                         <div class="p-2 border-b border-gray-100 dark:border-zinc-700">
-                            <input type="text" x-model="search" placeholder="Cari makanan..." class="w-full p-2 text-sm bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:focus:ring-emerald-400 text-slate-800 dark:text-white placeholder-gray-400">
+                            <input type="text" x-model="search" placeholder="Cari makanan..." class="w-full p-2 text-sm bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500 dark:focus:ring-emerald-400 text-slate-800 dark:text-white placeholder-gray-400">
                         </div>
 
                         <div class="overflow-y-auto hide-scrollbar">
                             <template x-for="source in filteredSources" :key="source.name">
                                 <div @click="selected = source.name; open = false; search = '';" 
-                                     class="px-4 py-3 cursor-pointer text-sm font-medium transition-colors hover:bg-emerald-50 dark:hover:bg-zinc-700/80 flex items-center justify-between"
-                                     :class="{'bg-emerald-50 text-emerald-600 dark:bg-zinc-700/50 dark:text-emerald-400': selected === source.name, 'text-gray-700 dark:text-zinc-300': selected !== source.name}">
+                                     class="px-4 py-3 cursor-pointer text-sm font-medium transition-colors hover:bg-red-50 dark:hover:bg-zinc-700/80 flex items-center justify-between"
+                                     :class="{'bg-red-50 text-red-600 dark:bg-zinc-700/50 dark:text-emerald-400': selected === source.name, 'text-gray-700 dark:text-zinc-300': selected !== source.name}">
                                     <span x-text="source.label"></span>
-                                    <svg x-show="selected === source.name" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                    <svg x-show="selected === source.name" class="w-4 h-4 text-red-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                                 </div>
                             </template>
                             <div x-show="filteredSources.length === 0" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-zinc-500">
@@ -123,14 +123,14 @@
 
                 <div class="relative">
                     <input type="number" step="0.5" wire:model.live="berat" 
-                           class="w-full border border-gray-200 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-900/50 text-slate-800 dark:text-white p-3 pr-16 rounded-xl focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 outline-none transition-colors duration-300"
+                           class="w-full border border-gray-200 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-900/50 text-slate-800 dark:text-white p-3 pr-16 rounded-xl focus:ring-2 focus:ring-red-500 dark:focus:ring-emerald-400 outline-none transition-colors duration-300"
                            placeholder="Berat Makanan">
                     <span class="absolute right-4 top-3.5 text-gray-400 dark:text-zinc-500 font-semibold pointer-events-none">gram</span>
                     @error('berat') <span class="text-xs text-rose-500 font-semibold mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
                 <button type="button" wire:click="saveLog" 
-                        class="w-full bg-emerald-600 dark:bg-emerald-500 text-white font-bold p-3 rounded-xl hover:bg-emerald-700 dark:hover:bg-emerald-600 transition-colors duration-300 shadow-md flex justify-center items-center gap-2">
+                        class="w-full bg-red-600 dark:bg-emerald-500 text-white font-bold p-3 rounded-xl hover:bg-red-700 dark:hover:bg-emerald-600 transition-colors duration-300 shadow-md flex justify-center items-center gap-2">
                     <span wire:loading.remove wire:target="saveLog">Simpan ke Log</span>
                     <span wire:loading wire:target="saveLog">Menyimpan...</span>
                 </button>
@@ -159,7 +159,7 @@
                                     <td class="p-4 font-semibold text-gray-800 dark:text-zinc-200">
                                         {{ $log->sumber_makanan }}
                                     </td>
-                                    <td class="p-4 font-bold text-emerald-600 dark:text-emerald-400">
+                                    <td class="p-4 font-bold text-red-600 dark:text-emerald-400">
                                         {{ number_format($log->jumlah_protein, 1) }}g
                                     </td>
                                     <td class="p-4 text-center">
@@ -185,13 +185,13 @@
             <!-- Context-Specific FAQ -->
             <section class="mt-8">
                 <h3 class="text-2xl font-extrabold text-gray-800 dark:text-white mb-6 transition-colors duration-300 flex items-center gap-2">
-                    <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> FAQ Nutrisi & Protein
+                    <svg class="w-6 h-6 text-red-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> FAQ Nutrisi & Protein
                 </h3>
                 <div class="space-y-4" x-data="{ activeAccordion: '' }">
                     <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
                         <button @click="activeAccordion = activeAccordion === 'faq1' ? '' : 'faq1'" class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
                             <span>Mengapa perhitungan menggunakan data USDA?</span>
-                            <span class="faq-icon text-emerald-600 dark:text-emerald-400 transform transition-transform duration-300 text-xl" :class="{'rotate-45': activeAccordion === 'faq1'}">+</span>
+                            <span class="faq-icon text-red-600 dark:text-emerald-400 transform transition-transform duration-300 text-xl" :class="{'rotate-45': activeAccordion === 'faq1'}">+</span>
                         </button>
                         <div class="faq-content overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30" :style="activeAccordion === 'faq1' ? 'max-height: 500px;' : 'max-height: 0px;'">
                             <div class="p-5 text-sm text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
@@ -204,7 +204,7 @@
                     <div class="faq-item bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300">
                         <button @click="activeAccordion = activeAccordion === 'faq2' ? '' : 'faq2'" class="faq-button w-full flex justify-between items-center p-5 text-left font-bold text-gray-800 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700/50 transition-colors focus:outline-none">
                             <span>Berapa sebenarnya target protein harian saya?</span>
-                            <span class="faq-icon text-emerald-600 dark:text-emerald-400 transform transition-transform duration-300 text-xl" :class="{'rotate-45': activeAccordion === 'faq2'}">+</span>
+                            <span class="faq-icon text-red-600 dark:text-emerald-400 transform transition-transform duration-300 text-xl" :class="{'rotate-45': activeAccordion === 'faq2'}">+</span>
                         </button>
                         <div class="faq-content overflow-hidden transition-all duration-300 ease-in-out bg-gray-50 dark:bg-zinc-900/30" :style="activeAccordion === 'faq2' ? 'max-height: 500px;' : 'max-height: 0px;'">
                             <div class="p-5 text-sm text-gray-600 dark:text-zinc-400 leading-relaxed border-t border-gray-100 dark:border-zinc-700">
