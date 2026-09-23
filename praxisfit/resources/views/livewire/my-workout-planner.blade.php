@@ -4,7 +4,7 @@
      class="space-y-12 relative pb-20">
      
     <!-- HERO PLANNER HEADER WITH PROMINENT GRADIENT ACTION BUTTON -->
-    <div class="relative overflow-hidden bg-gradient-to-br from-white via-slate-50 to-emerald-50 dark:from-zinc-900 dark:via-zinc-850 dark:to-emerald-950 p-8 sm:p-12 rounded-3xl border border-gray-200 dark:border-zinc-800 shadow-xl dark:shadow-2xl transition-all duration-300">
+    <div class="relative overflow-hidden bg-gradient-to-br from-white via-slate-50 to-emerald-50 dark:from-zinc-900 dark:via-zinc-800 dark:to-emerald-950 p-8 sm:p-12 rounded-3xl border border-gray-200 dark:border-zinc-800 shadow-xl dark:shadow-2xl transition-all duration-300">
         <div class="absolute -right-10 top-0 w-96 h-96 rounded-full bg-emerald-500/10 dark:bg-emerald-400/10 blur-3xl pointer-events-none"></div>
         
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
