@@ -24,13 +24,13 @@ class FaqPage extends Component
         $faqsByCategory = $faqsQuery->get()->groupBy('kategori');
         
         $categoryNames = [
-            'latihan' => '🏋️ Seputar Latihan',
-            'latihan_di_rumah' => '🏡 Latihan di Rumah (Home Workout)',
-            'nutrisi' => '🥩 Protein & Nutrisi',
-            'pola_tidur' => '🛌 Pola Tidur & Recovery',
-            'suplemen_mitos' => '💊 Suplemen & Mitos',
-            'keamanan' => '🚑 Cedera & Keamanan',
-            'mindset' => '🧠 Mindset & Konsistensi',
+            'latihan' => 'Seputar Latihan',
+            'latihan_di_rumah' => 'Latihan di Rumah (Home Workout)',
+            'nutrisi' => 'Protein & Nutrisi',
+            'pola_tidur' => 'Pola Tidur & Recovery',
+            'suplemen_mitos' => 'Suplemen & Mitos',
+            'keamanan' => 'Cedera & Keamanan',
+            'mindset' => 'Mindset & Konsistensi',
         ];
 
         return view('livewire.faq-page', [
