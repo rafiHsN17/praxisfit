@@ -229,10 +229,10 @@
             </div>
 
             <!-- Modal Form with Custom Sleek Inputs -->
-            <form wire:submit.prevent="save" class="space-y-5 text-sm font-bold text-slate-800 dark:text-zinc-200">
+            <form wire:submit.prevent="save" class="space-y-6 text-sm font-bold text-slate-800 dark:text-zinc-200">
                 
                 <!-- Pilih Gerakan (Visual Selector dengan Live Search & Animasi) -->
-                <div class="relative space-y-2"
+                <div class="relative space-y-3"
                      x-data="{
                          openDropdown: false,
                          search: '',
@@ -240,18 +240,21 @@
                          exercises: {{ $exercises->map(fn($ex) => [
                              'id' => $ex->id,
                              'name' => $ex->name,
-                             'target' => $ex->target_muscle ?? 'Core',
+                             'target' => $ex->target_muscle ?? 'Lainnya',
                              'difficulty' => $ex->difficulty ?? 'Menengah',
-                             'video' => preg_replace('/^\[(.*?)\]\(.*?\)$/', '$1', $ex->video_male ?? '')
+                             'animation' => $ex->icon ?? ''
                          ])->toJson() }},
                          get selectedExercise() {
                              if (!this.selectedId && this.exercises.length > 0) return this.exercises[0];
                              return this.exercises.find(e => e.id == this.selectedId) || this.exercises[0] || null;
                          },
                          get filteredExercises() {
-                             if (!this.search.trim()) return this.exercises;
-                             const q = this.search.toLowerCase();
-                             return this.exercises.filter(e => e.name.toLowerCase().includes(q) || e.target.toLowerCase().includes(q) || e.difficulty.toLowerCase().includes(q));
+                             let results = this.exercises;
+                             if (this.search.trim()) {
+                                 const q = this.search.toLowerCase();
+                                 results = results.filter(e => e.name.toLowerCase().includes(q) || e.target.toLowerCase().includes(q) || e.difficulty.toLowerCase().includes(q));
+                             }
+                             return results.slice(0, 30); // Prevent DOM freeze by limiting results
                          },
                          selectExercise(id) {
                              this.selectedId = id;
@@ -263,102 +266,111 @@
                          init() {
                              this.$watch('selectedId', (val) => { 
                                  this.playing = false; 
-                                 if (this.$refs.previewVideo) this.$refs.previewVideo.pause();
                              });
                          },
                          toggleAnim() {
-                             if (!this.selectedExercise || !this.$refs.previewVideo) return;
+                             if (!this.selectedExercise || !this.selectedExercise.animation) return;
                              this.playing = !this.playing;
-                             if (this.playing) {
-                                 this.$refs.previewVideo.play();
-                             } else {
-                                 this.$refs.previewVideo.pause();
-                             }
                          }
                      }">
                     
-                    <label class="block text-xs font-black text-gray-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5 flex justify-between items-center">
+                    <label class="block text-xs font-black text-gray-500 dark:text-zinc-400 uppercase tracking-wider mb-2 flex justify-between items-center">
                         <span>1. Pilih Gerakan Workout</span>
                         <span class="text-red-600 dark:text-emerald-400 font-extrabold text-[11px]">(310 Database Tersedia)</span>
                     </label>
 
                     <!-- Card Preview -->
-                    <div class="relative p-4 rounded-2xl bg-slate-100 dark:bg-zinc-800/90 border border-gray-200/80 dark:border-zinc-700 shadow-inner flex items-center gap-4 transition-all">
+                    <div class="relative p-4 rounded-2xl bg-white dark:bg-zinc-800/60 border border-gray-100 dark:border-zinc-700/60 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] dark:shadow-none flex flex-col sm:flex-row items-center gap-5 transition-all">
                         <div @click="toggleAnim()" 
-                             title="Klik untuk memutar / menghentikan animasi gerakan ini!"
-                             class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 p-1.5 shrink-0 flex items-center justify-center relative cursor-pointer group shadow-md hover:border-red-500 dark:hover:border-emerald-400 transition-all">
-                            <template x-if="selectedExercise && selectedExercise.video">
-                                <video x-ref="previewVideo" :src="selectedExercise.video" class="w-full h-full object-cover mix-blend-multiply dark:mix-blend-normal group-hover:scale-105 transition-transform rounded-lg" loop muted playsinline></video>
+                             title="Klik untuk melihat animasi gerakan"
+                             class="w-24 h-24 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 p-2 shrink-0 flex items-center justify-center relative cursor-pointer group shadow-sm hover:border-red-500 dark:hover:border-emerald-400 transition-all overflow-hidden">
+                            <template x-if="selectedExercise && selectedExercise.animation">
+                                <!-- Animasi GIF atau WebP -->
+                                <img :src="selectedExercise.animation" class="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal group-hover:scale-110 transition-transform duration-300" alt="Animasi Gerakan" loading="lazy">
                             </template>
-                            <template x-if="!selectedExercise || !selectedExercise.video">
-                                <svg class="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <template x-if="!selectedExercise || !selectedExercise.animation">
+                                <svg class="w-10 h-10 text-gray-300 dark:text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </template>
-                            <div class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-slate-900/80 text-white text-[8px] font-black tracking-tighter uppercase shadow flex items-center gap-1">
-                                <span x-show="playing"><svg class="w-2 h-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Stop</span>
-                                <span x-show="!playing"><svg class="w-2 h-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Animasi</span>
+                            <div class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-md bg-white/90 dark:bg-zinc-950/90 text-slate-800 dark:text-zinc-200 text-[9px] font-black tracking-tighter uppercase shadow-sm flex items-center gap-1 backdrop-blur-md border border-gray-200 dark:border-zinc-800">
+                                <svg class="w-2.5 h-2.5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span>Animasi</span>
                             </div>
                         </div>
 
-                        <div class="flex-1 min-w-0 space-y-2.5">
+                        <div class="flex-1 min-w-0 space-y-3 w-full">
                             <template x-if="selectedExercise">
                                 <div>
-                                    <div class="text-base font-black tracking-tight text-slate-900 dark:text-white truncate" x-text="selectedExercise.name"></div>
-                                    <div class="flex flex-wrap items-center gap-2 mt-1.5">
-                                        <span class="text-[10px] font-black px-2 py-0.5 rounded-md bg-red-100 dark:bg-emerald-950/80 text-red-700 dark:text-emerald-400 uppercase border border-red-200/50 dark:border-emerald-800/50 flex items-center gap-1">
-                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Target: <span x-text="selectedExercise.target"></span>
+                                    <div class="text-lg font-black tracking-tight text-slate-900 dark:text-white truncate" x-text="selectedExercise.name"></div>
+                                    <div class="flex flex-wrap items-center gap-2 mt-2">
+                                        <span class="text-[10px] font-black px-2.5 py-1 rounded-md bg-red-50 dark:bg-emerald-950/40 text-red-600 dark:text-emerald-400 uppercase border border-red-100 dark:border-emerald-800/40 flex items-center gap-1.5">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> <span x-text="selectedExercise.target"></span>
                                         </span>
-                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-gray-200 dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 uppercase" x-text="selectedExercise.difficulty"></span>
+                                        <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 uppercase" x-text="selectedExercise.difficulty"></span>
                                     </div>
                                 </div>
                             </template>
                             
                             <button type="button" @click="openDropdown = !openDropdown; if(openDropdown) $nextTick(() => $refs.searchInput.focus())"
-                                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-red-600 dark:bg-zinc-900 dark:hover:bg-emerald-500 text-white dark:text-zinc-200 dark:hover:text-white font-extrabold text-xs transition-colors shadow-sm border border-transparent dark:border-zinc-700">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                                <span>Cari / Ganti Gerakan...</span>
-                                <span x-text="openDropdown ? '▲' : '▼'"></span>
+                                    class="w-full sm:w-auto inline-flex justify-between sm:justify-start items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 font-extrabold text-xs transition-colors shadow-md border border-transparent">
+                                <span class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                    <span>Ganti Gerakan...</span>
+                                </span>
+                                <svg class="w-4 h-4 opacity-50 transform transition-transform" :class="openDropdown ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Dropdown Daftar Gerakan dengan Fitur Cari (Live Search) -->
+                    <!-- Dropdown Daftar Gerakan dengan Fitur Cari (Command Palette Style) -->
                     <div x-show="openDropdown" @click.away="openDropdown = false" x-cloak
                          x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                         x-transition:enter-start="opacity-0 translate-y-1 scale-95"
                          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                         class="absolute z-50 left-0 right-0 top-full mt-2 p-3 bg-white dark:bg-zinc-900 border-2 border-red-500/40 dark:border-emerald-400/40 rounded-2xl shadow-2xl space-y-2 max-h-80 flex flex-col">
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave-end="opacity-0 translate-y-1 scale-95"
+                         class="absolute z-50 left-0 right-0 top-full mt-2 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700/80 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] dark:shadow-2xl overflow-hidden flex flex-col">
                         
-                        <div class="relative shrink-0">
-                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-sm"><svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></span>
-                            <input x-ref="searchInput" x-model="search" type="text" 
-                                   placeholder="Ketik nama gerakan atau target otot (cth: Push, Dada, Squat)..." 
-                                   class="w-full pl-10 pr-8 py-2.5 text-xs font-extrabold bg-slate-100 dark:bg-zinc-950 text-slate-900 dark:text-white rounded-xl border border-gray-300 dark:border-zinc-700 focus:ring-2 focus:ring-red-600 dark:focus:ring-emerald-400 outline-none placeholder-gray-400 shadow-inner">
-                            <button type="button" x-show="search" @click="search = ''" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-500 font-bold">✕</button>
+                        <div class="relative shrink-0 border-b border-gray-100 dark:border-zinc-800">
+                            <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-red-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            </span>
+                            <input x-ref="searchInput" x-model.debounce.300ms="search" type="text" 
+                                   placeholder="Ketik nama gerakan atau otot (cth: Push, Squat)..." 
+                                   class="w-full pl-12 pr-10 py-4 text-sm font-bold bg-transparent text-slate-900 dark:text-white outline-none placeholder-gray-400 dark:placeholder-zinc-500">
+                            <button type="button" x-show="search" @click="search = ''" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-500 transition-colors">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
                         </div>
 
-                        <div class="overflow-y-auto space-y-1.5 pr-1 flex-1 min-h-[160px] max-h-56 border-t border-gray-100 dark:border-zinc-800 pt-2">
+                        <div class="overflow-y-auto min-h-[120px] max-h-[300px] bg-slate-50/50 dark:bg-zinc-900/50 p-2 space-y-1 custom-scrollbar">
                             <template x-for="item in filteredExercises" :key="item.id">
                                 <div @click="selectExercise(item.id)"
-                                     :class="selectedId == item.id ? 'bg-red-50/80 border-red-500 dark:bg-emerald-950/60 dark:border-emerald-400 text-red-600 dark:text-emerald-400 font-black' : 'bg-transparent hover:bg-slate-50 dark:hover:bg-zinc-800/70 border-transparent text-slate-800 dark:text-zinc-200'"
-                                     class="flex items-center gap-3 p-2 rounded-xl border cursor-pointer transition-all group">
-                                    <template x-if="item.video">
-                                        <video :src="item.video" class="w-11 h-11 rounded-lg object-cover bg-slate-50 dark:bg-zinc-950 p-0.5 border border-gray-200 dark:border-zinc-800 shrink-0 group-hover:scale-105 transition-transform" autoplay loop muted playsinline></video>
+                                     :class="selectedId == item.id ? 'bg-red-50 dark:bg-emerald-900/20 shadow-sm ring-1 ring-red-200 dark:ring-emerald-800' : 'bg-transparent hover:bg-white dark:hover:bg-zinc-800 hover:shadow-sm ring-1 ring-transparent hover:ring-gray-100 dark:hover:ring-zinc-700/50'"
+                                     class="flex items-center gap-4 p-2.5 rounded-xl cursor-pointer transition-all group">
+                                    <template x-if="item.animation">
+                                        <img :src="item.animation" class="w-12 h-12 rounded-lg object-contain bg-white dark:bg-zinc-950 p-1 border border-gray-100 dark:border-zinc-800 shrink-0 group-hover:scale-110 transition-transform duration-300" alt="Animasi" loading="lazy">
                                     </template>
-                                    <template x-if="!item.video">
-                                        <div class="w-11 h-11 rounded-lg flex items-center justify-center bg-slate-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 shrink-0"><svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+                                    <template x-if="!item.animation">
+                                        <div class="w-12 h-12 rounded-lg flex items-center justify-center bg-white dark:bg-zinc-950 border border-gray-100 dark:border-zinc-800 shrink-0 text-gray-300 dark:text-zinc-600">
+                                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        </div>
                                     </template>
                                     <div class="flex-1 min-w-0">
-                                        <div class="font-extrabold text-xs truncate group-hover:text-red-600 dark:group-hover:text-emerald-400 transition-colors" x-text="item.name"></div>
-                                        <div class="flex items-center gap-1.5 mt-0.5 text-[10px] text-gray-400 dark:text-zinc-400 font-bold">
-                                            <span class="text-red-500 dark:text-emerald-400">●</span> <span x-text="item.target"></span> &bull; <span x-text="item.difficulty"></span>
+                                        <div class="font-extrabold text-sm text-slate-800 dark:text-zinc-100 truncate group-hover:text-red-600 dark:group-hover:text-emerald-400 transition-colors" x-text="item.name"></div>
+                                        <div class="flex items-center gap-2 mt-1 text-[11px] text-gray-500 dark:text-zinc-400 font-bold tracking-tight">
+                                            <span x-text="item.target" class="text-red-600 dark:text-emerald-400 uppercase"></span> &bull; <span x-text="item.difficulty"></span>
                                         </div>
                                     </div>
-                                    <span x-show="selectedId == item.id" class="text-xs font-black px-2 text-red-600 dark:text-emerald-400 shrink-0 flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg> Dipilih</span>
+                                    <span x-show="selectedId == item.id" class="text-red-600 dark:text-emerald-400 shrink-0 px-2">
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                    </span>
                                 </div>
                             </template>
-                            <div x-show="filteredExercises.length === 0" class="p-6 text-center text-xs text-gray-500 dark:text-zinc-500 font-semibold space-y-1 flex flex-col items-center">
-                                <svg class="w-8 h-8 mb-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <div>Gerakan yang dicari tidak ditemukan.</div>
+                            <div x-show="filteredExercises.length === 0" class="py-10 text-center text-gray-400 dark:text-zinc-500 flex flex-col items-center">
+                                <svg class="w-10 h-10 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <div class="text-sm font-bold">Tidak ditemukan</div>
+                                <div class="text-xs font-medium mt-1">Coba gunakan kata kunci lain</div>
                             </div>
                         </div>
                     </div>
