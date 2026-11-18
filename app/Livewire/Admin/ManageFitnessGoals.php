@@ -2,18 +2,18 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
 use App\Models\FitnessGoal;
-use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 #[Title('Kelola Tujuan Latihan - Admin PraxisFit')]
-#[Layout('components.layouts.admin')]
+#[Layout('layouts.admin')]
 class ManageFitnessGoals extends Component
 {
     public $goals;
     public $isEditing = false;
-    
+
     public $goalId;
     public $name;
     public $description;

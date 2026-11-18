@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ request()->routeIs('register') ? 'Daftar Akun - PraxisFit' : 'Masuk - PraxisFit' }}</title>
+    <title>{{ $title ?? (request()->routeIs('register') ? 'Daftar Akun - PraxisFit' : 'Masuk - PraxisFit') }}</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/praxisfit-logo.svg') }}">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800|manrope:600,700,800&display=swap" rel="stylesheet" />
 
     <script>
         function initPraxisTheme() {
@@ -40,35 +42,34 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         [x-cloak] { display: none !important; }
-        /* Mencegah Chrome mengubah warna input autofill menjadi biru muda */
         input:-webkit-autofill,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:focus {
-            -webkit-text-fill-color: #18181b;
+            -webkit-text-fill-color: #202124;
             -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
             transition: background-color 5000s ease-in-out 0s;
         }
         .dark input:-webkit-autofill,
         .dark input:-webkit-autofill:hover,
         .dark input:-webkit-autofill:focus {
-            -webkit-text-fill-color: #f4f4f5;
-            -webkit-box-shadow: 0 0 0px 1000px #09090b inset;
+            -webkit-text-fill-color: #F5F5F5;
+            -webkit-box-shadow: 0 0 0px 1000px #251518 inset;
         }
     </style>
     @livewireStyles
 </head>
-<body class="min-h-screen font-sans antialiased text-zinc-900 dark:text-zinc-100 bg-gradient-to-br from-white via-zinc-50 to-red-50/50 dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-900 selection:bg-red-600 dark:selection:bg-emerald-500 selection:text-white relative overflow-x-hidden transition-colors duration-300 flex flex-col">
+<body class="min-h-screen font-sans antialiased text-[#202124] dark:text-[#F5F5F5] bg-[#100809] selection:bg-[#E54855] selection:text-white relative overflow-x-hidden flex flex-col">
 
-    <!-- Aksen Gradasi Halus Merah-Putih (Light Mode) & Hijau Gelap (Dark Mode) -->
-    <div class="pointer-events-none fixed inset-0 overflow-hidden -z-10">
-        <div class="absolute -top-32 -left-24 w-[28rem] h-[28rem] rounded-full bg-red-100/60 dark:bg-emerald-500/10 blur-3xl"></div>
-        <div class="absolute bottom-0 -right-24 w-[26rem] h-[26rem] rounded-full bg-rose-100/50 dark:bg-emerald-600/10 blur-3xl"></div>
+    <!-- Gym Photo Background + Overlay -->
+    <div class="pointer-events-none fixed inset-0 -z-10">
+        <img src="{{ asset('images/auth-gym-bg.jpg') }}" alt="" class="w-full h-full object-cover object-center opacity-55 dark:opacity-40">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#100809]/80 via-[#100809]/70 to-[#E54855]/25 dark:from-[#100809]/90 dark:via-[#100809]/85 dark:to-[#1A1012]/90 backdrop-blur-[2px]"></div>
     </div>
 
     <!-- Header Minimalis: Kembali ke Beranda & Toggle Tema -->
     <header class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-2 flex items-center justify-between">
         <a href="{{ url('/') }}" wire:navigate
-           class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-zinc-700 hover:text-red-600 dark:text-zinc-300 dark:hover:text-emerald-400 bg-white/90 dark:bg-zinc-900/85 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 shadow-xs transition-colors">
+           class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-white bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/15 transition-colors">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>
@@ -76,11 +77,11 @@
         </a>
 
         <button type="button" onclick="togglePraxisTheme()"
-                class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-zinc-700 hover:text-red-600 dark:text-zinc-200 dark:hover:text-emerald-400 bg-white/90 dark:bg-zinc-900/85 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 shadow-xs transition-colors cursor-pointer">
-            <svg class="w-4 h-4 hidden dark:block text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/15 transition-colors cursor-pointer">
+            <svg class="w-4 h-4 hidden dark:block text-[#E54855]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
             </svg>
-            <svg class="w-4 h-4 block dark:hidden text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="w-4 h-4 block dark:hidden text-[#E54855]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
             </svg>
             <span class="hidden sm:inline dark:hidden">Dark Mode</span>
@@ -88,7 +89,7 @@
         </button>
     </header>
 
-    <!-- Konten Utama (Halaman Terpisah: Hanya Kartu Masuk ATAU Hanya Kartu Daftar) -->
+    <!-- Konten Utama Centered Card -->
     <main class="flex-1 w-full px-4 sm:px-6 py-6 sm:py-10 flex items-center justify-center">
         {{ $slot }}
     </main>

@@ -6,34 +6,36 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Title('Daftar Akun - PraxisFit')]
 class Register extends Component
 {
-    public $name = '';
-    public $email = '';
-    public $phone = '';
-    public $password = '';
-    public $password_confirmation = '';
+    public string $name = '';
+    public string $email = '';
+    public string $phone = '';
+    public string $password = '';
+    public string $password_confirmation = '';
 
-    protected $rules = [
+    protected array $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users,email',
         'phone' => ['required', 'string', 'min:8', 'max:20', 'regex:/^[0-9+\-\s()]+$/'],
         'password' => 'required|string|min:6|confirmed',
     ];
 
-    protected $messages = [
+    protected array $messages = [
         'name.required' => 'Nama lengkap wajib diisi.',
-        'email.required' => 'Email wajib diisi.',
-        'email.email' => 'Format email tidak valid (contoh: contoh@gmail.com).',
+        'email.required' => 'Alamat email wajib diisi.',
+        'email.email' => 'Format email tidak valid (contoh: nama@email.com).',
         'email.unique' => 'Email ini sudah terdaftar, silakan gunakan email lain atau Masuk.',
         'phone.required' => 'Nomor telepon wajib diisi.',
         'phone.min' => 'Nomor telepon minimal 8 digit.',
         'phone.regex' => 'Format nomor telepon hanya boleh berisi angka atau tanda hubung.',
-        'password.required' => 'Password wajib diisi.',
-        'password.min' => 'Password minimal 6 karakter.',
-        'password.confirmed' => 'Konfirmasi password tidak cocok.',
+        'password.required' => 'Kata sandi wajib diisi.',
+        'password.min' => 'Kata sandi minimal 6 karakter.',
+        'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
     ];
 
     public function resetForm(): void
@@ -55,11 +57,15 @@ class Register extends Component
             $formattedPhone = '+62' . $cleanPhone;
         }
 
+        $email = strtolower(trim($this->email));
+
         $userData = [
             'name' => trim($this->name),
-            'email' => strtolower(trim($this->email)),
+            'email' => $email,
             'password' => Hash::make($this->password),
             'email_verified_at' => now(),
+            'otp_code' => null,
+            'otp_expires_at' => null,
         ];
 
         if (Schema::hasColumn('users', 'phone')) {
@@ -68,10 +74,9 @@ class Register extends Component
 
         $user = User::create($userData);
 
-        Auth::login($user);
-        session()->regenerate();
-
-        return redirect('/')->with('success', 'Pendaftaran berhasil! Selamat datang di PraxisFit.');
+        return redirect()
+            ->route('login')
+            ->with('success', 'Pendaftaran berhasil! Silakan masuk sesuai email dan kata sandi yang baru Anda daftarkan.');
     }
 
     public function render()

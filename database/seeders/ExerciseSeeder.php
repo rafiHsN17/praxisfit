@@ -138,11 +138,16 @@ class ExerciseSeeder extends Seeder
                 $icon = $ex['gif_url'];
             }
 
+            $mappedEquipment = $this->mapEquipment($equipment, (string) ($ex['name'] ?? ''));
+            $mappedCategory = $this->mapCategory($target, (string) ($ex['name'] ?? ''));
+
             // Gunakan updateOrCreate untuk mencegah duplikasi data
             Exercise::updateOrCreate(
                 ['name' => ucwords($ex['name'])],
                 [
                     'target_muscle' => $target,
+                    'category'      => $mappedCategory,
+                    'equipment'     => $mappedEquipment,
                     'difficulty'    => $difficulty,
                     'instructions'  => $indoInstructions,
                     'icon'          => $icon,
@@ -249,5 +254,30 @@ class ExerciseSeeder extends Seeder
         if (str_contains($level, 'inter')) return 'Menengah';
         if (str_contains($level, 'adv') || str_contains($level, 'expe')) return 'Lanjut';
         return 'Menengah';
+    }
+
+    private function mapEquipment(string $rawEquipment, string $exerciseName): string
+    {
+        $combined = strtolower($rawEquipment . ' ' . $exerciseName);
+        if (str_contains($combined, 'kettlebell')) return 'Kettlebell';
+        if (str_contains($combined, 'resistance band') || str_contains($rawEquipment, 'band')) return 'Resistance Band';
+        if (str_contains($rawEquipment, 'cable') || str_contains($combined, 'cable')) return 'Cable';
+        if (str_contains($rawEquipment, 'dumbbell') || str_contains($combined, 'dumbbell')) return 'Dumbbell';
+        if (str_contains($rawEquipment, 'barbell') || str_contains($combined, 'barbell')) return 'Barbell';
+        if (str_contains($rawEquipment, 'machine') || str_contains($combined, 'machine')) return 'Machine';
+        if (in_array($rawEquipment, ['other', 'medicine ball', 'exercise ball', 'foam roll'])) return 'Alat Bantu Lainnya';
+        return 'Bodyweight';
+    }
+
+    private function mapCategory(string $targetMuscle, string $exerciseName): string
+    {
+        $nameLower = strtolower($exerciseName);
+        if ($targetMuscle === 'Kardio' || str_contains($nameLower, 'bicycling') || str_contains($nameLower, 'burpee') || str_contains($nameLower, 'running')) {
+            return 'Kardio & Daya Tahan';
+        }
+        if (str_contains($nameLower, 'stretch') || str_contains($nameLower, 'foam') || str_contains($nameLower, 'mobility')) {
+            return 'Mobilitas & Peregangan';
+        }
+        return 'Kekuatan & Hipertrofi';
     }
 }

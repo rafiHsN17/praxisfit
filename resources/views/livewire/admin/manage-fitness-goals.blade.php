@@ -1,60 +1,74 @@
 <div class="space-y-6">
-    <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Manajemen Tujuan Latihan</h1>
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#202124] dark:text-[#F5F5F5] tracking-tight">
+                Kelola <span class="text-[#E54855]">Tujuan Latihan</span>
+            </h1>
+            <p class="text-sm text-[#777777] dark:text-[#AAA0A2] mt-1">
+                Sesuaikan deskripsi dan rekomendasi pembagian jadwal mingguan (split) untuk pengguna.
+            </p>
+        </div>
     </div>
 
     @if (session()->has('success'))
-        <div class="p-4 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-200">
+        <div class="p-4 bg-[#E54855]/10 text-[#C93646] dark:text-[#E54855] rounded-xl border border-[#E54855]/30 text-sm font-semibold">
             {{ session('success') }}
         </div>
     @endif
 
     @if($isEditing)
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-            <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Edit Tujuan: {{ $name }}</h2>
+        <div class="bg-white dark:bg-[#1A1012] rounded-2xl border border-[#E9E9EC] dark:border-[#342427] p-6 shadow-xs">
+            <h2 class="text-lg font-extrabold text-[#202124] dark:text-[#F5F5F5] mb-4">Edit Tujuan: {{ $name }}</h2>
             <form wire:submit.prevent="saveGoal" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama</label>
-                    <input type="text" wire:model="name" class="mt-1 w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    <label class="block text-xs font-bold text-[#777777] dark:text-[#AAA0A2] mb-1.5">Nama Tujuan</label>
+                    <input type="text" wire:model="name" class="w-full px-3.5 py-2.5 rounded-xl border border-[#E9E9EC] dark:border-[#342427] bg-[#F7F7F8] dark:bg-[#251518] text-sm text-[#202124] dark:text-[#F5F5F5]">
+                    @error('name') <span class="text-xs text-[#E54855] mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Deskripsi</label>
-                    <textarea wire:model="description" rows="3" class="mt-1 w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"></textarea>
+                    <label class="block text-xs font-bold text-[#777777] dark:text-[#AAA0A2] mb-1.5">Deskripsi</label>
+                    <textarea wire:model="description" rows="3" class="w-full px-3.5 py-2.5 rounded-xl border border-[#E9E9EC] dark:border-[#342427] bg-[#F7F7F8] dark:bg-[#251518] text-sm text-[#202124] dark:text-[#F5F5F5]"></textarea>
+                    @error('description') <span class="text-xs text-[#E54855] mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipe Split</label>
-                    <input type="text" wire:model="split_type" class="mt-1 w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    <label class="block text-xs font-bold text-[#777777] dark:text-[#AAA0A2] mb-1.5">Tipe Split</label>
+                    <input type="text" wire:model="split_type" class="w-full px-3.5 py-2.5 rounded-xl border border-[#E9E9EC] dark:border-[#342427] bg-[#F7F7F8] dark:bg-[#251518] text-sm text-[#202124] dark:text-[#F5F5F5]">
+                    @error('split_type') <span class="text-xs text-[#E54855] mt-1 block">{{ $message }}</span> @enderror
                 </div>
-                <div class="flex gap-2">
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg">Simpan</button>
-                    <button type="button" wire:click="cancelEdit" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg">Batal</button>
+                <div class="flex gap-2.5 pt-2">
+                    <button type="submit" class="bg-[#E54855] hover:bg-[#C93646] text-white text-sm font-bold py-2.5 px-5 rounded-xl cursor-pointer">Simpan Perubahan</button>
+                    <button type="button" wire:click="cancelEdit" class="bg-[#F1F1F4] dark:bg-[#251518] text-[#202124] dark:text-[#F5F5F5] text-sm font-semibold py-2.5 px-5 rounded-xl cursor-pointer">Batal</button>
                 </div>
             </form>
         </div>
     @else
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-            <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-                <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs uppercase text-gray-700 dark:text-gray-300">
-                    <tr>
-                        <th class="px-6 py-4 font-medium">Nama Tujuan</th>
-                        <th class="px-6 py-4 font-medium">Split</th>
-                        <th class="px-6 py-4 font-medium">Deskripsi</th>
-                        <th class="px-6 py-4 font-medium text-right">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                    @foreach($goals as $goal)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                            <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $goal->name }}</td>
-                            <td class="px-6 py-4"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">{{ $goal->split_type }}</span></td>
-                            <td class="px-6 py-4">{{ Str::limit($goal->description, 50) }}</td>
-                            <td class="px-6 py-4 text-right">
-                                <button wire:click="editGoal({{ $goal->id }})" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium">Edit</button>
-                            </td>
+        <div class="bg-white dark:bg-[#1A1012] rounded-2xl border border-[#E9E9EC] dark:border-[#342427] shadow-xs overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-[#F7F7F8] dark:bg-[#251518] text-xs uppercase text-[#777777] dark:text-[#AAA0A2] border-b border-[#E9E9EC] dark:border-[#342427]">
+                        <tr>
+                            <th class="px-6 py-4 font-bold">Nama Tujuan</th>
+                            <th class="px-6 py-4 font-bold">Split</th>
+                            <th class="px-6 py-4 font-bold">Deskripsi</th>
+                            <th class="px-6 py-4 font-bold text-right">Aksi</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-[#E9E9EC] dark:divide-[#342427]">
+                        @foreach($goals as $goal)
+                            <tr class="hover:bg-[#F7F7F8]/60 dark:hover:bg-[#251518]/60 transition-colors">
+                                <td class="px-6 py-4 font-bold text-[#202124] dark:text-[#F5F5F5]">{{ $goal->name }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="bg-[#E54855]/10 text-[#E54855] px-2.5 py-1 rounded-lg text-xs font-bold">{{ $goal->split_type }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-[#777777] dark:text-[#AAA0A2]">{{ \Illuminate\Support\Str::limit($goal->description, 70) }}</td>
+                                <td class="px-6 py-4 text-right">
+                                    <button type="button" wire:click="editGoal({{ $goal->id }})" class="text-[#E54855] hover:text-[#C93646] font-bold text-xs cursor-pointer">Edit</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     @endif
 </div>

@@ -1,53 +1,69 @@
-<div>
-    <div class="mb-8 flex justify-between items-end">
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-            <h1 class="text-3xl font-black text-white tracking-tight uppercase">Kelola Kalkulator Protein</h1>
-            <p class="text-zinc-400 mt-2">Database sumber makanan untuk fitur Kalkulator Protein publik.</p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#202124] dark:text-[#F5F5F5] tracking-tight">
+                Kelola <span class="text-[#E54855]">Sumber Nutrisi (TKPI)</span>
+            </h1>
+            <p class="text-sm text-[#777777] dark:text-[#AAA0A2] mt-1">
+                Database bahan makanan Indonesia untuk fitur Kalkulator Nutrisi &amp; Catatan Makan Harian.
+            </p>
         </div>
-        <button wire:click="openModal" class="px-5 py-2.5 bg-lime-400 text-zinc-950 font-bold rounded-xl hover:bg-lime-500 transition-colors shadow-[0_0_15px_rgba(163,230,53,0.3)]">
-            + Tambah Makanan
+        <button type="button" wire:click="openModal" class="px-5 py-2.5 bg-[#E54855] hover:bg-[#C93646] text-white text-sm font-bold rounded-xl shadow-sm transition-colors shrink-0 cursor-pointer">
+            + Tambah Sumber Makanan
         </button>
     </div>
 
     @if (session()->has('success'))
-        <div class="mb-6 p-4 bg-lime-400/10 border border-lime-400/20 rounded-xl text-lime-400">
+        <div class="p-4 bg-[#E54855]/10 border border-[#E54855]/30 rounded-xl text-[#C93646] dark:text-[#E54855] text-sm font-semibold">
             {{ session('success') }}
         </div>
     @endif
 
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
+    <div class="bg-white dark:bg-[#1A1012] border border-[#E9E9EC] dark:border-[#342427] rounded-2xl overflow-hidden shadow-xs">
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-zinc-300">
-                <thead class="text-xs text-zinc-400 uppercase bg-zinc-950 border-b border-zinc-800">
+            <table class="w-full text-left text-sm">
+                <thead class="text-xs text-[#777777] dark:text-[#AAA0A2] uppercase bg-[#F7F7F8] dark:bg-[#251518] border-b border-[#E9E9EC] dark:border-[#342427]">
                     <tr>
-                        <th class="px-6 py-4 font-semibold">Nama Sumber Makanan</th>
-                        <th class="px-6 py-4 font-semibold text-center">Protein (per 100g)</th>
-                        <th class="px-6 py-4 font-semibold text-right">Aksi</th>
+                        <th class="px-5 py-3.5 font-bold">Nama Bahan Makanan (per 100g)</th>
+                        <th class="px-5 py-3.5 font-bold text-center">Protein</th>
+                        <th class="px-5 py-3.5 font-bold text-center">Kalori</th>
+                        <th class="px-5 py-3.5 font-bold text-center">Lemak</th>
+                        <th class="px-5 py-3.5 font-bold text-center">Karbohidrat</th>
+                        <th class="px-5 py-3.5 font-bold text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-zinc-800">
+                <tbody class="divide-y divide-[#E9E9EC] dark:divide-[#342427]">
                     @forelse ($sources as $source)
-                        <tr class="hover:bg-zinc-800/50 transition-colors">
-                            <td class="px-6 py-4 font-medium text-white">
+                        <tr class="hover:bg-[#F7F7F8]/60 dark:hover:bg-[#251518]/60 transition-colors">
+                            <td class="px-5 py-3.5 font-bold text-[#202124] dark:text-[#F5F5F5]">
                                 {{ $source->name }}
                             </td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-3 py-1 bg-lime-400/10 text-lime-400 border border-lime-400/20 rounded-lg font-bold">
+                            <td class="px-5 py-3.5 text-center">
+                                <span class="px-2.5 py-1 bg-[#E54855]/10 text-[#E54855] rounded-lg text-xs font-extrabold">
                                     {{ $source->protein_per_100g }} g
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-right">
-                                <button wire:click="edit({{ $source->id }})" class="text-zinc-400 hover:text-white transition-colors mr-3 font-medium">
+                            <td class="px-5 py-3.5 text-center font-semibold text-[#202124] dark:text-[#F5F5F5]">
+                                {{ $source->calories_per_100g }} kkal
+                            </td>
+                            <td class="px-5 py-3.5 text-center text-[#777777] dark:text-[#AAA0A2]">
+                                {{ $source->fat_per_100g }} g
+                            </td>
+                            <td class="px-5 py-3.5 text-center text-[#777777] dark:text-[#AAA0A2]">
+                                {{ $source->carbs_per_100g }} g
+                            </td>
+                            <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                                <button type="button" wire:click="edit({{ $source->id }})" class="text-xs font-bold text-[#202124] dark:text-[#F5F5F5] hover:text-[#E54855] transition-colors mr-3 cursor-pointer">
                                     Edit
                                 </button>
-                                <button wire:click="delete({{ $source->id }})" wire:confirm="Yakin ingin menghapus sumber makanan ini?" class="text-red-400 hover:text-red-300 transition-colors font-medium">
+                                <button type="button" wire:click="delete({{ $source->id }})" wire:confirm="Yakin ingin menghapus sumber makanan ini?" class="text-xs font-bold text-[#C93646] dark:text-[#E54855] hover:underline transition-colors cursor-pointer">
                                     Hapus
                                 </button>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="px-6 py-8 text-center text-zinc-500">
+                            <td colspan="6" class="px-5 py-10 text-center text-[#777777] dark:text-[#AAA0A2]">
                                 Belum ada sumber makanan di database.
                             </td>
                         </tr>
@@ -59,39 +75,45 @@
 
     <!-- Modal Form -->
     @if($isModalOpen)
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl relative">
-                
-                <div class="p-6 border-b border-zinc-800 flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-white uppercase">{{ $editId ? 'Edit Sumber Makanan' : 'Tambah Sumber Makanan' }}</h2>
-                    <button wire:click="closeModal" class="text-zinc-500 hover:text-white transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+            <div class="bg-white dark:bg-[#1A1012] border border-[#E9E9EC] dark:border-[#342427] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+                <div class="p-5 border-b border-[#E9E9EC] dark:border-[#342427] flex justify-between items-center">
+                    <h2 class="text-lg font-extrabold text-[#202124] dark:text-[#F5F5F5]">{{ $editId ? 'Edit Sumber Nutrisi' : 'Tambah Sumber Nutrisi' }}</h2>
+                    <button type="button" wire:click="closeModal" class="text-[#777777] hover:text-[#E54855] text-xl font-bold cursor-pointer">&times;</button>
                 </div>
 
-                <div class="p-6 space-y-5">
+                <form wire:submit="save" class="p-5 space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">Nama Sumber Makanan</label>
-                        <input type="text" wire:model="name" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition-all placeholder-zinc-600" placeholder="Contoh: Dada Kalkun">
-                        @error('name') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        <label class="block text-xs font-bold text-[#777777] dark:text-[#AAA0A2] mb-1.5">Nama Sumber Makanan</label>
+                        <input type="text" wire:model="name" required class="w-full bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] rounded-xl px-3.5 py-2.5 text-sm text-[#202124] dark:text-[#F5F5F5] focus:outline-none focus:border-[#E54855]" placeholder="Contoh: Ikan Kembung Segar">
+                        @error('name') <span class="text-[#E54855] text-xs mt-1 block">{{ $message }}</span> @enderror
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">Protein per 100 gram (g)</label>
-                        <input type="number" step="0.1" wire:model="protein_per_100g" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition-all placeholder-zinc-600" placeholder="Contoh: 29.5">
-                        @error('protein_per_100g') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-[#777777] dark:text-[#AAA0A2] mb-1.5">Protein / 100g (g)</label>
+                            <input type="number" step="0.1" wire:model="protein_per_100g" required class="w-full bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] rounded-xl px-3.5 py-2.5 text-sm text-[#202124] dark:text-[#F5F5F5] focus:outline-none focus:border-[#E54855]" placeholder="22">
+                            @error('protein_per_100g') <span class="text-[#E54855] text-xs mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-[#777777] dark:text-[#AAA0A2] mb-1.5">Kalori / 100g (kkal)</label>
+                            <input type="number" step="0.1" wire:model="calories_per_100g" class="w-full bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] rounded-xl px-3.5 py-2.5 text-sm text-[#202124] dark:text-[#F5F5F5] focus:outline-none focus:border-[#E54855]" placeholder="167">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-[#777777] dark:text-[#AAA0A2] mb-1.5">Lemak / 100g (g)</label>
+                            <input type="number" step="0.1" wire:model="fat_per_100g" class="w-full bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] rounded-xl px-3.5 py-2.5 text-sm text-[#202124] dark:text-[#F5F5F5] focus:outline-none focus:border-[#E54855]" placeholder="9">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-[#777777] dark:text-[#AAA0A2] mb-1.5">Karbohidrat / 100g (g)</label>
+                            <input type="number" step="0.1" wire:model="carbs_per_100g" class="w-full bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] rounded-xl px-3.5 py-2.5 text-sm text-[#202124] dark:text-[#F5F5F5] focus:outline-none focus:border-[#E54855]" placeholder="0">
+                        </div>
                     </div>
-                </div>
 
-                <div class="p-6 border-t border-zinc-800 flex justify-end gap-3 bg-zinc-950/50">
-                    <button wire:click="closeModal" class="px-5 py-2.5 text-zinc-400 font-medium hover:text-white transition-colors">
-                        Batal
-                    </button>
-                    <button wire:click="save" class="px-5 py-2.5 bg-lime-400 text-zinc-950 font-bold rounded-xl hover:bg-lime-500 transition-colors shadow-[0_0_15px_rgba(163,230,53,0.2)]">
-                        Simpan Data
-                    </button>
-                </div>
-
+                    <div class="pt-3 border-t border-[#E9E9EC] dark:border-[#342427] flex justify-end gap-2.5">
+                        <button type="button" wire:click="closeModal" class="px-4 py-2.5 rounded-xl bg-[#F1F1F4] dark:bg-[#251518] text-sm font-semibold text-[#202124] dark:text-[#F5F5F5] cursor-pointer">Batal</button>
+                        <button type="submit" class="px-5 py-2.5 bg-[#E54855] hover:bg-[#C93646] text-white text-sm font-bold rounded-xl cursor-pointer">Simpan Data</button>
+                    </div>
+                </form>
             </div>
         </div>
     @endif

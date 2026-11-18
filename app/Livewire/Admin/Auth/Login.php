@@ -2,27 +2,73 @@
 
 namespace App\Livewire\Admin\Auth;
 
-use Livewire\Component;
+use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Layout;
+use Illuminate\Support\Facades\Hash;
+use Livewire\Component;
 
 class Login extends Component
 {
+    public string $name = '';
     public string $email = '';
     public string $password = '';
 
     public function login()
     {
+        if ($this->name === '' && $this->email !== '') {
+            $this->name = $this->email;
+        }
+
         $this->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'name' => 'required|string',
+            'password' => 'required|string',
+        ], [
+            'name.required' => 'Nama admin wajib diisi.',
+            'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
-        if (Auth::guard('admin')->attempt(['email' => $this->email, 'password' => $this->password])) {
+        $loginInput = trim($this->name);
+
+        // Kredensial utama admin-praxisfit-1
+        if ($loginInput === 'admin-praxisfit-1' && $this->password === 'tinju-kangguru-123') {
+            $admin = Admin::updateOrCreate(
+                ['email' => 'admin@praxisfit.com'],
+                [
+                    'name' => 'admin-praxisfit-1',
+                    'password' => Hash::make('tinju-kangguru-123'),
+                ]
+            );
+            $user = User::updateOrCreate(
+                ['name' => 'admin-praxisfit-1'],
+                [
+                    'email' => 'admin@praxisfit.com',
+                    'password' => Hash::make('tinju-kangguru-123'),
+                    'email_verified_at' => now(),
+                ]
+            );
+
+            Auth::guard('admin')->login($admin);
+            Auth::guard('web')->login($user);
+            session()->regenerate();
+
             return redirect()->route('admin.dashboard');
         }
 
-        $this->addError('email', 'Email atau kata sandi admin tidak valid.');
+        // Cek tabel admins berdasarkan nama atau email
+        $admin = Admin::where('name', $loginInput)
+            ->orWhere('email', $loginInput)
+            ->first();
+
+        if ($admin && Hash::check($this->password, $admin->password)) {
+            Auth::guard('admin')->login($admin);
+            session()->regenerate();
+
+            return redirect()->route('admin.dashboard');
+        }
+
+        $this->addError('name', 'Nama admin atau kata sandi tidak valid.');
+        $this->addError('email', 'Nama admin atau kata sandi tidak valid.');
     }
 
     public function render()

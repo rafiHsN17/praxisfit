@@ -2,14 +2,16 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
 use App\Models\Exercise;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 use Livewire\WithFileUploads;
 
 #[Layout('layouts.admin')]
+#[Title('Kelola Gerakan - Admin PraxisFit')]
 class ManageExercises extends Component
 {
     use WithFileUploads;
@@ -19,16 +21,15 @@ class ManageExercises extends Component
     public $editId = null;
     public $name;
     public $target_muscle;
-    public $equipment;
+    public $equipment = 'Bodyweight';
+    public $category = 'Kekuatan & Hipertrofi';
     public $difficulty = 'Pemula';
     public $instructions;
-    
-    // File uploads
+
     public $image_1_file;
     public $image_2_file;
     public $image_3_file;
 
-    // Existing previews
     public $image_1_preview;
     public $image_2_preview;
     public $image_3_preview;
@@ -42,7 +43,6 @@ class ManageExercises extends Component
 
     public function loadExercises()
     {
-        // Load all exercises ordered by newest
         $this->exercises = Exercise::orderBy('id', 'desc')->get();
     }
 
@@ -64,9 +64,10 @@ class ManageExercises extends Component
         $this->name = '';
         $this->target_muscle = '';
         $this->equipment = 'Bodyweight';
+        $this->category = 'Kekuatan & Hipertrofi';
         $this->difficulty = 'Pemula';
         $this->instructions = '';
-        
+
         $this->image_1_file = null;
         $this->image_2_file = null;
         $this->image_3_file = null;
@@ -84,9 +85,10 @@ class ManageExercises extends Component
             'name' => 'required|string|max:255',
             'target_muscle' => 'required|string|max:100',
             'equipment' => 'nullable|string|max:100',
+            'category' => 'nullable|string|max:100',
             'difficulty' => 'required|in:Pemula,Menengah,Lanjut',
             'instructions' => 'required|string',
-            'image_1_file' => 'nullable|image|max:2048', // max 2MB
+            'image_1_file' => 'nullable|image|max:2048',
             'image_2_file' => 'nullable|image|max:2048',
             'image_3_file' => 'nullable|image|max:2048',
         ]);
@@ -95,17 +97,16 @@ class ManageExercises extends Component
             $data = [
                 'name' => $this->name,
                 'target_muscle' => $this->target_muscle,
-                'equipment' => $this->equipment ?? 'Bodyweight',
+                'equipment' => trim((string) $this->equipment) !== '' ? trim((string) $this->equipment) : 'Bodyweight',
+                'category' => trim((string) $this->category) !== '' ? trim((string) $this->category) : 'Kekuatan & Hipertrofi',
                 'difficulty' => $this->difficulty,
                 'instructions' => $this->instructions,
                 'is_custom' => true,
             ];
 
-            // Handle file uploads
             if ($this->image_1_file) {
                 $path = $this->image_1_file->store('exercises', 'public');
                 $data['image_1'] = '/storage/' . $path;
-                // update icon as fallback to image 1 if not set
                 $data['icon'] = $data['image_1'];
             }
             if ($this->image_2_file) {
@@ -123,10 +124,9 @@ class ManageExercises extends Component
             );
 
             session()->flash('success', $this->editId ? 'Data gerakan berhasil diperbarui.' : 'Gerakan baru berhasil ditambahkan.');
-            
+
             $this->closeModal();
             $this->loadExercises();
-
         } catch (\Exception $e) {
             Log::error('Error saving custom exercise: ' . $e->getMessage());
             session()->flash('error', 'Gagal menyimpan data gerakan. Silakan coba lagi.');
@@ -136,26 +136,26 @@ class ManageExercises extends Component
     public function edit($id)
     {
         $exercise = Exercise::findOrFail($id);
-        
+
         $this->editId = $exercise->id;
         $this->name = $exercise->name;
         $this->target_muscle = $exercise->target_muscle;
-        $this->equipment = $exercise->equipment;
-        $this->difficulty = $exercise->difficulty;
+        $this->equipment = $exercise->equipment ?: 'Bodyweight';
+        $this->category = $exercise->category ?: 'Kekuatan & Hipertrofi';
+        $this->difficulty = $exercise->difficulty ?: 'Pemula';
         $this->instructions = $exercise->instructions;
-        
+
         $this->image_1_preview = $exercise->image_1;
         $this->image_2_preview = $exercise->image_2;
         $this->image_3_preview = $exercise->image_3;
-        
+
         $this->isModalOpen = true;
     }
 
     public function delete($id)
     {
         $exercise = Exercise::findOrFail($id);
-        
-        // Optional: Hapus file gambar fisik dari storage jika perlu
+
         if ($exercise->image_1 && str_starts_with($exercise->image_1, '/storage/exercises/')) {
             Storage::disk('public')->delete(str_replace('/storage/', '', $exercise->image_1));
         }
@@ -167,7 +167,7 @@ class ManageExercises extends Component
         }
 
         $exercise->delete();
-        
+
         $this->loadExercises();
         session()->flash('success', 'Gerakan berhasil dihapus.');
     }

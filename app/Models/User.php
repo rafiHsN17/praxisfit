@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens; // <-- 1. PASTIKAN BARIS INI ADA
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
+    use HasApiTokens, HasFactory, Notifiable;
+
     /**
      * Relasi Eloquent: Satu User bisa memiliki banyak jadwal latihan mandiri (WorkoutRoutine).
      */
@@ -18,12 +21,25 @@ class User extends Authenticatable
         return $this->hasMany(WorkoutRoutine::class);
     }
 
-    public function fitnessGoal()
+    public function workoutSessions(): HasMany
+    {
+        return $this->hasMany(WorkoutSession::class);
+    }
+
+    public function proteinLogs(): HasMany
+    {
+        return $this->hasMany(ProteinLog::class);
+    }
+
+    public function supportMessages(): HasMany
+    {
+        return $this->hasMany(SupportMessage::class);
+    }
+
+    public function fitnessGoal(): BelongsTo
     {
         return $this->belongsTo(FitnessGoal::class);
     }
-
-    use HasApiTokens, HasFactory, Notifiable; // <-- 2. TAMBAHKAN HasApiTokens DI SINI
 
     protected $fillable = [
         'name',
@@ -38,7 +54,12 @@ class User extends Authenticatable
         'weight',
         'height',
         'gender',
+        'age',
+        'activity_level',
         'protein_target',
+        'calorie_target',
+        'fat_target',
+        'carb_target',
         'fitness_goal_id',
     ];
 
@@ -51,7 +72,15 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'otp_expires_at' => 'datetime',
             'password' => 'hashed',
+            'weight' => 'float',
+            'height' => 'float',
+            'age' => 'integer',
+            'protein_target' => 'float',
+            'calorie_target' => 'float',
+            'fat_target' => 'float',
+            'carb_target' => 'float',
         ];
     }
 }

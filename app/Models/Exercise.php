@@ -13,6 +13,7 @@ class Exercise extends Model
     protected $fillable = [
         'name',
         'target_muscle',
+        'category',
         'equipment',
         'difficulty',
         'instructions',
@@ -30,5 +31,10 @@ class Exercise extends Model
     public function workoutRoutines(): HasMany
     {
         return $this->hasMany(WorkoutRoutine::class);
+    }
+
+    public function workoutSessionItems(): HasMany
+    {
+        return $this->hasMany(WorkoutSessionItem::class);
     }
 }
