@@ -2,18 +2,21 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\FitnessGoal;
 use App\Models\WorkoutRoutine;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 
 #[Title('Profil & Tujuan Latihan - PraxisFit')]
 class UserProfile extends Component
 {
     public $weight;
+
     public $height;
+
     public $gender;
+
     public $fitness_goal_id;
 
     public function mount()
@@ -35,7 +38,7 @@ class UserProfile extends Component
         ]);
 
         $user = Auth::user();
-        
+
         // Cek jika tujuan latihan berubah, maka jadwalkan ulang rutinitasnya
         $goalChanged = $user->fitness_goal_id != $this->fitness_goal_id;
 
@@ -61,7 +64,7 @@ class UserProfile extends Component
 
         // Ambil rutinitas rekomendasi
         $goal = FitnessGoal::with('routines')->find($goalId);
-        
+
         if ($goal) {
             foreach ($goal->routines as $routine) {
                 WorkoutRoutine::create([
@@ -79,7 +82,7 @@ class UserProfile extends Component
     public function render()
     {
         return view('livewire.user-profile', [
-            'fitnessGoals' => FitnessGoal::all()
+            'fitnessGoals' => FitnessGoal::all(),
         ])->layout('components.layouts.app');
     }
 }

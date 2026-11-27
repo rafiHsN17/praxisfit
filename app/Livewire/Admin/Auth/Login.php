@@ -3,15 +3,18 @@
 namespace App\Livewire\Admin\Auth;
 
 use App\Models\Admin;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Title('Masuk Admin - PraxisFit')]
 class Login extends Component
 {
     public string $name = '';
+
     public string $email = '';
+
     public string $password = '';
 
     public function login()
@@ -39,17 +42,9 @@ class Login extends Component
                     'password' => Hash::make('tinju-kangguru-123'),
                 ]
             );
-            $user = User::updateOrCreate(
-                ['name' => 'admin-praxisfit-1'],
-                [
-                    'email' => 'admin@praxisfit.com',
-                    'password' => Hash::make('tinju-kangguru-123'),
-                    'email_verified_at' => now(),
-                ]
-            );
 
+            Auth::guard('web')->logout();
             Auth::guard('admin')->login($admin);
-            Auth::guard('web')->login($user);
             session()->regenerate();
 
             return redirect()->route('admin.dashboard');
@@ -61,6 +56,7 @@ class Login extends Component
             ->first();
 
         if ($admin && Hash::check($this->password, $admin->password)) {
+            Auth::guard('web')->logout();
             Auth::guard('admin')->login($admin);
             session()->regenerate();
 

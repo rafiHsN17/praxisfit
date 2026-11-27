@@ -12,7 +12,7 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 
 #[Layout('layouts.admin')]
-#[Title('Admin Dashboard - PraxisFit')]
+#[Title('Dasbor Admin - PraxisFit')]
 class Dashboard extends Component
 {
     public function markSupportRead(int $id): void

@@ -12,14 +12,20 @@ use Livewire\Component;
 class FaqPage extends Component
 {
     public string $search = '';
+
     public string $activeCategory = '';
 
     // Form Bantuan ("Masih Membutuhkan Bantuan?")
     public bool $showContactForm = false;
+
     public bool $contactSubmitted = false;
+
     public string $contactName = '';
+
     public string $contactEmail = '';
+
     public string $contactSubject = '';
+
     public string $contactMessage = '';
 
     public function mount(): void
@@ -37,7 +43,7 @@ class FaqPage extends Component
 
     public function openContactForm(): void
     {
-        $this->showContactForm = !$this->showContactForm;
+        $this->showContactForm = ! $this->showContactForm;
         $this->contactSubmitted = false;
     }
 
@@ -67,7 +73,7 @@ class FaqPage extends Component
         ]);
 
         $this->reset(['contactSubject', 'contactMessage']);
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             $this->reset(['contactName', 'contactEmail']);
         }
         $this->contactSubmitted = true;
@@ -90,13 +96,13 @@ class FaqPage extends Component
         }
 
         if (trim($this->search) !== '') {
-            $term = '%' . trim($this->search) . '%';
+            $term = '%'.trim($this->search).'%';
             $faqsQuery->where(function ($query) use ($term) {
                 $query->where('pertanyaan', 'like', $term)
-                      ->orWhere('jawaban_singkat', 'like', $term)
-                      ->orWhere('contoh', 'like', $term)
-                      ->orWhere('sumber_nama', 'like', $term)
-                      ->orWhere('kategori', 'like', $term);
+                    ->orWhere('jawaban_singkat', 'like', $term)
+                    ->orWhere('contoh', 'like', $term)
+                    ->orWhere('sumber_nama', 'like', $term)
+                    ->orWhere('kategori', 'like', $term);
             });
         }
 

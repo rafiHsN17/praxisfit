@@ -5,7 +5,7 @@
         <div class="space-y-1.5">
             <div class="flex flex-wrap items-center gap-2">
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#E54855]/10 text-[#E54855]">
-                    Workout Plan &bull; Asia/Jakarta
+                    Workout Plan
                 </span>
                 <span class="text-xs font-medium text-[#777777] dark:text-[#AAA0A2]">
                     Hari ini: <strong class="text-[#202124] dark:text-[#F5F5F5]">{{ $todayLabel }}</strong>
@@ -36,6 +36,14 @@
                         <span>Terapkan Rutinitas Minggu Ini</span>
                     </button>
                 @endif
+
+                <a href="{{ route('program.generator') }}" wire:navigate
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F1F1F4] dark:bg-[#251518] hover:border-[#E54855] text-[#202124] dark:text-[#F5F5F5] border border-[#E9E9EC] dark:border-[#342427] text-xs sm:text-sm font-bold transition-colors">
+                    <svg class="w-4 h-4 text-[#E54855]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <span>Buat Program Otomatis</span>
+                </a>
 
                 <button type="button" wire:click="openCreateSessionModal"
                         class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#E54855] hover:bg-[#C93646] text-white text-xs sm:text-sm font-bold shadow-sm shadow-[#E54855]/20 transition-colors cursor-pointer">
@@ -269,7 +277,15 @@
                                 <div class="py-10 text-center rounded-2xl border border-dashed border-[#E9E9EC] dark:border-[#342427] space-y-3">
                                     <p class="text-sm font-semibold text-[#202124] dark:text-[#F5F5F5]">Belum ada jadwal sesi pada tampilan ini.</p>
                                     <p class="text-xs text-[#777777] dark:text-[#AAA0A2]">Buat jadwal baru atau terapkan template dari Rutinitas Mingguan Anda.</p>
-                                    <button type="button" wire:click="openCreateSessionModal"
+                                    <a href="{{ route('program.generator') }}" wire:navigate
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F1F1F4] dark:bg-[#251518] hover:border-[#E54855] text-[#202124] dark:text-[#F5F5F5] border border-[#E9E9EC] dark:border-[#342427] text-xs sm:text-sm font-bold transition-colors">
+                    <svg class="w-4 h-4 text-[#E54855]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <span>Buat Program Otomatis</span>
+                </a>
+
+                <button type="button" wire:click="openCreateSessionModal"
                                             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E54855] hover:bg-[#C93646] text-white text-xs font-bold transition-colors cursor-pointer">
                                         + Buat Jadwal Latihan
                                     </button>
@@ -502,7 +518,15 @@
                 <div class="bg-white dark:bg-[#1A1012] rounded-2xl border border-[#E9E9EC] dark:border-[#342427] p-5 shadow-xs space-y-4">
                     <div class="flex items-center justify-between">
                         <h3 class="text-sm font-extrabold text-[#202124] dark:text-[#F5F5F5]">Jadwal Mendatang</h3>
-                        <button type="button" wire:click="openCreateSessionModal"
+                        <a href="{{ route('program.generator') }}" wire:navigate
+                   class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F1F1F4] dark:bg-[#251518] hover:border-[#E54855] text-[#202124] dark:text-[#F5F5F5] border border-[#E9E9EC] dark:border-[#342427] text-xs sm:text-sm font-bold transition-colors">
+                    <svg class="w-4 h-4 text-[#E54855]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <span>Buat Program Otomatis</span>
+                </a>
+
+                <button type="button" wire:click="openCreateSessionModal"
                                 class="w-8 h-8 rounded-full bg-[#E54855] hover:bg-[#C93646] text-white flex items-center justify-center shadow-sm transition-colors cursor-pointer"
                                 title="Tambah Jadwal Baru">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -593,8 +617,29 @@
                 $currentExercise?->image_2,
                 $currentExercise?->image_3,
             ])->filter()->values()->all();
+            $currentPrimaryImage = $currentImages[0] ?? '';
             $nextImage = $nextItem?->exercise?->image_1 ?? $nextItem?->exercise?->icon ?? null;
             $initialElapsed = $activeSession->started_at ? max(0, (int) now('Asia/Jakarta')->diffInSeconds($activeSession->started_at)) : 0;
+
+            $targetSetsCount = max(1, (int) ($currentItem?->target_sets ?? 1));
+            $completedSetsCount = max(0, (int) ($currentItem?->completed_sets ?? 0));
+            $allSetsDone = $completedSetsCount >= $targetSetsCount;
+            $activeSetNumber = min($targetSetsCount, $completedSetsCount + 1);
+            $isOnFinalSet = !$allSetsDone && ($activeSetNumber >= $targetSetsCount);
+            $recommendedRestSec = max(0, (int) ($currentItem?->rest_seconds ?: 60));
+
+            $currentSetPayload = $currentItem ? [
+                'itemId' => $currentItem->id,
+                'nextCompletedSet' => min($targetSetsCount, $completedSetsCount + 1),
+                'targetSets' => $targetSetsCount,
+                'hasNextExercise' => (bool) $nextItem,
+                'nextExerciseIndex' => $currentIndex + 1,
+                'exerciseName' => (string) $currentItem->exercise_name,
+                'exerciseReps' => (string) $currentItem->target_reps,
+                'exerciseMuscle' => (string) $currentItem->target_muscle,
+                'exerciseImage' => (string) $currentPrimaryImage,
+                'recommendedRest' => $recommendedRestSec,
+            ] : null;
         @endphp
 
         <div wire:key="fullscreen-workout-{{ $activeSession->id }}"
@@ -603,12 +648,23 @@
                  workoutPaused: false,
                  workoutTimerId: null,
                  isResting: false,
+                 restPaused: false,
+                 restMode: 'set',
                  restDuration: @entangle('restDurationSeconds'),
+                 useCustomRest: @entangle('useCustomRestDuration'),
                  restRemaining: 0,
-                 restTotal: 45,
+                 restTotal: 60,
                  restTimerId: null,
+                 restCompletedSetNumber: 1,
+                 restNextSetNumber: 2,
+                 restTargetSets: 3,
+                 restExerciseName: '',
+                 restExerciseReps: '',
+                 restExerciseMuscle: '',
+                 restExerciseImage: '',
                  pendingItemId: null,
                  pendingNextIndex: 0,
+                 soundEnabled: true,
                  showQuickAdd: false,
                  init() {
                      this.workoutTimerId = setInterval(() => {
@@ -616,6 +672,13 @@
                              this.elapsedSeconds++;
                          }
                      }, 1000);
+                 },
+                 destroy() {
+                     if (this.workoutTimerId) {
+                         clearInterval(this.workoutTimerId);
+                         this.workoutTimerId = null;
+                     }
+                     this.stopRestTimer();
                  },
                  formatClock(sec) {
                      const s = Math.max(0, parseInt(sec || 0, 10));
@@ -630,25 +693,97 @@
                      const r = String(s % 60).padStart(2, '0');
                      return m + ':' + r;
                  },
+                 playBeep(freq = 720, durationMs = 110, repeat = 1) {
+                     if (!this.soundEnabled) return;
+                     try {
+                         const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                         if (!AudioCtx) return;
+                         const ctx = new AudioCtx();
+                         for (let i = 0; i < repeat; i++) {
+                             const startAt = ctx.currentTime + (i * ((durationMs + 70) / 1000));
+                             const osc = ctx.createOscillator();
+                             const gain = ctx.createGain();
+                             osc.type = 'sine';
+                             osc.frequency.setValueAtTime(freq, startAt);
+                             gain.gain.setValueAtTime(0.08, startAt);
+                             gain.gain.exponentialRampToValueAtTime(0.001, startAt + (durationMs / 1000));
+                             osc.connect(gain);
+                             gain.connect(ctx.destination);
+                             osc.start(startAt);
+                             osc.stop(startAt + (durationMs / 1000));
+                         }
+                         setTimeout(() => { try { ctx.close(); } catch (e) {} }, (repeat * (durationMs + 100)) + 200);
+                     } catch (e) {}
+                 },
+                 startRestCountdown(seconds) {
+                     this.stopRestTimer();
+                     const total = Math.max(1, parseInt(seconds, 10));
+                     this.restTotal = total;
+                     this.restRemaining = total;
+                     this.restPaused = false;
+                     this.isResting = true;
+                     this.restTimerId = setInterval(() => {
+                         if (this.restPaused) return;
+                         if (this.restRemaining > 1) {
+                             this.restRemaining--;
+                             if (this.restRemaining <= 3) {
+                                 this.playBeep(660, 90, 1);
+                             }
+                         } else {
+                             this.playBeep(880, 140, 2);
+                             this.finishRest();
+                         }
+                     }, 1000);
+                 },
+                 completeSetAndRest(cfg) {
+                     if (!cfg || !cfg.itemId) return;
+                     $wire.completeSetStep(cfg.itemId);
+
+                     const customRest = Math.max(0, parseInt(this.restDuration ?? cfg.recommendedRest ?? 60, 10));
+                     const hasMoreSets = cfg.nextCompletedSet < cfg.targetSets;
+
+                     if (hasMoreSets) {
+                         if (customRest <= 0) {
+                             return;
+                         }
+                         this.restMode = 'set';
+                         this.restCompletedSetNumber = cfg.nextCompletedSet;
+                         this.restNextSetNumber = cfg.nextCompletedSet + 1;
+                         this.restTargetSets = cfg.targetSets;
+                         this.restExerciseName = cfg.exerciseName || '';
+                         this.restExerciseReps = cfg.exerciseReps || '';
+                         this.restExerciseMuscle = cfg.exerciseMuscle || '';
+                         this.restExerciseImage = cfg.exerciseImage || '';
+                         this.pendingItemId = null;
+                         this.pendingNextIndex = 0;
+                         this.startRestCountdown(customRest);
+                         return;
+                     }
+
+                     if (cfg.hasNextExercise) {
+                         if (customRest <= 0) {
+                             $wire.completeItemAndAdvance(cfg.itemId, cfg.nextExerciseIndex);
+                             return;
+                         }
+                         this.restMode = 'exercise';
+                         this.restCompletedSetNumber = cfg.targetSets;
+                         this.restTargetSets = cfg.targetSets;
+                         this.restExerciseName = cfg.exerciseName || '';
+                         this.pendingItemId = cfg.itemId;
+                         this.pendingNextIndex = cfg.nextExerciseIndex;
+                         this.startRestCountdown(customRest);
+                     }
+                 },
                  triggerNextWithRest(itemId, nextIdx) {
                      const customRest = Math.max(0, parseInt(this.restDuration || 0, 10));
                      if (customRest <= 0) {
                          $wire.completeItemAndAdvance(itemId, nextIdx);
                          return;
                      }
-                     this.stopRestTimer();
+                     this.restMode = 'exercise';
                      this.pendingItemId = itemId;
                      this.pendingNextIndex = nextIdx;
-                     this.restTotal = customRest;
-                     this.restRemaining = customRest;
-                     this.isResting = true;
-                     this.restTimerId = setInterval(() => {
-                         if (this.restRemaining > 1) {
-                             this.restRemaining--;
-                         } else {
-                             this.finishRestAndAdvance();
-                         }
-                     }, 1000);
+                     this.startRestCountdown(customRest);
                  },
                  adjustRestRemaining(delta) {
                      this.restRemaining = Math.max(1, this.restRemaining + delta);
@@ -659,12 +794,21 @@
                          clearInterval(this.restTimerId);
                          this.restTimerId = null;
                      }
+                     this.restPaused = false;
                      this.isResting = false;
+                 },
+                 finishRest() {
+                     if (this.restMode === 'exercise') {
+                         this.finishRestAndAdvance();
+                     } else {
+                         this.stopRestTimer();
+                     }
                  },
                  finishRestAndAdvance() {
                      const itemId = this.pendingItemId;
                      const nextIdx = this.pendingNextIndex;
                      this.stopRestTimer();
+                     this.pendingItemId = null;
                      if (itemId !== null) {
                          $wire.completeItemAndAdvance(itemId, nextIdx);
                      }
@@ -701,25 +845,48 @@
                         </div>
                     </div>
 
-                    <!-- Tengah: Pengaturan Waktu Rest (Ditentukan User Sendiri) -->
+                    <!-- Tengah: Pengaturan Waktu Istirahat (Otomatis dari Gerakan + Bisa Diubah User) -->
                     <div class="flex flex-wrap items-center gap-2 bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] px-3 py-1.5 rounded-xl">
-                        <span class="text-[11px] font-bold text-[#777777] dark:text-[#AAA0A2]">Waktu Rest:</span>
+                        <span class="text-[11px] font-bold text-[#777777] dark:text-[#AAA0A2]">Jeda Rest:</span>
                         <div class="flex items-center gap-1">
-                            @foreach([15, 30, 45, 60, 90] as $presetSec)
+                            @foreach([30, 45, 60, 90, 120] as $presetSec)
                                 <button type="button"
-                                        @click="restDuration = {{ $presetSec }}"
-                                        :class="parseInt(restDuration) === {{ $presetSec }} ? 'bg-[#E54855] text-white' : 'bg-white dark:bg-[#1A1012] text-[#777777] dark:text-[#AAA0A2] hover:text-[#E54855]'"
-                                        class="px-2 py-1 rounded-lg text-[11px] font-bold border border-[#E9E9EC] dark:border-[#342427] transition-colors cursor-pointer">
+                                        @click="$wire.setCustomRestDuration({{ $presetSec }})"
+                                        :class="parseInt(restDuration) === {{ $presetSec }} ? 'bg-[#E54855] text-white border-[#E54855]' : 'bg-white dark:bg-[#1A1012] text-[#777777] dark:text-[#AAA0A2] hover:text-[#E54855] border-[#E9E9EC] dark:border-[#342427]'"
+                                        class="px-2 py-1 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer">
                                     {{ $presetSec }}d
                                 </button>
                             @endforeach
                         </div>
                         <div class="flex items-center gap-1 pl-1 border-l border-[#E9E9EC] dark:border-[#342427]">
-                            <input type="number" x-model.number="restDuration" min="0" max="600"
+                            <input type="number"
+                                   :value="restDuration"
+                                   @change="$wire.setCustomRestDuration(Math.max(0, Math.min(600, parseInt($event.target.value || 0, 10))))"
+                                   min="0" max="600"
                                    class="w-14 px-2 py-1 rounded-lg bg-white dark:bg-[#1A1012] border border-[#E9E9EC] dark:border-[#342427] text-xs font-mono font-bold text-center text-[#202124] dark:text-[#F5F5F5] focus:outline-none focus:border-[#E54855]"
-                                   title="Atur sendiri durasi istirahat (detik)">
-                            <span class="text-[11px] font-semibold text-[#777777] dark:text-[#AAA0A2]">detik</span>
+                                   title="Atur sendiri durasi istirahat antar set/gerakan (detik). Isi 0 untuk tanpa jeda.">
+                            <span class="text-[11px] font-semibold text-[#777777] dark:text-[#AAA0A2]">dtk</span>
+                            <button type="button"
+                                    x-show="useCustomRest"
+                                    x-cloak
+                                    @click="$wire.resetRestToRecommended()"
+                                    class="ml-1 px-2 py-1 rounded-lg bg-[#E54855]/10 text-[#E54855] text-[10px] font-extrabold hover:bg-[#E54855]/20 transition-colors cursor-pointer"
+                                    title="Kembalikan ke durasi rekomendasi gerakan ({{ $recommendedRestSec }} detik)">
+                                Auto ({{ $recommendedRestSec }}d)
+                            </button>
                         </div>
+                        <button type="button"
+                                @click="soundEnabled = !soundEnabled"
+                                :class="soundEnabled ? 'text-[#E54855] border-[#E54855]/30 bg-[#E54855]/10' : 'text-[#777777] dark:text-[#AAA0A2] border-[#E9E9EC] dark:border-[#342427] bg-white dark:bg-[#1A1012]'"
+                                class="p-1.5 rounded-lg border transition-colors cursor-pointer"
+                                :title="soundEnabled ? 'Suara Timer Aktif (Klik untuk bisukan)' : 'Suara Timer Dibisukan (Klik untuk aktifkan)'">
+                            <svg x-show="soundEnabled" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                            </svg>
+                            <svg x-show="!soundEnabled" x-cloak class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
+                            </svg>
+                        </button>
                     </div>
 
                     <!-- Kanan: Stopwatch Waktu Latihan Live + Tutup Sementara -->
@@ -828,6 +995,15 @@
                                         <span class="px-3 py-1 rounded-lg bg-[#E54855]/10 text-[#E54855] text-xs font-extrabold uppercase tracking-wider">
                                             Gerakan {{ $currentIndex + 1 }} dari {{ $totalItems }}
                                         </span>
+                                        @if($allSetsDone)
+                                            <span class="px-3 py-1 rounded-lg bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-xs font-extrabold uppercase tracking-wider">
+                                                Semua Set Selesai
+                                            </span>
+                                        @else
+                                            <span class="px-3 py-1 rounded-lg bg-[#E54855] text-white text-xs font-extrabold uppercase tracking-wider shadow-xs">
+                                                Set {{ $activeSetNumber }} dari {{ $targetSetsCount }}{{ $isOnFinalSet ? ' • Set Terakhir' : '' }}
+                                            </span>
+                                        @endif
                                         <span class="px-2.5 py-1 rounded-lg bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] text-xs font-bold text-[#202124] dark:text-[#F5F5F5]">
                                             Otot: {{ $currentItem->target_muscle }}
                                         </span>
@@ -847,12 +1023,34 @@
                                         {{ $currentItem->exercise_name }}
                                     </h3>
 
-                                    <!-- Kotak Target Set & Repetisi + Pencatat Set -->
+                                    <!-- Indikator Progres Per Set -->
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        @for($setNum = 1; $setNum <= $targetSetsCount; $setNum++)
+                                            @php
+                                                $isSetCompleted = $setNum <= $completedSetsCount;
+                                                $isSetActive = !$allSetsDone && $setNum === $activeSetNumber;
+                                            @endphp
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold border transition-all {{ $isSetCompleted ? 'bg-[#E54855]/15 border-[#E54855]/40 text-[#E54855]' : ($isSetActive ? 'bg-[#E54855] border-[#E54855] text-white shadow-xs shadow-[#E54855]/25' : 'bg-[#F7F7F8] dark:bg-[#251518] border-[#E9E9EC] dark:border-[#342427] text-[#777777] dark:text-[#AAA0A2]') }}">
+                                                @if($isSetCompleted)
+                                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                @elseif($isSetActive)
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                                                @else
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-current opacity-40"></span>
+                                                @endif
+                                                <span>Set {{ $setNum }}</span>
+                                            </span>
+                                        @endfor
+                                    </div>
+
+                                    <!-- Kotak Target Set & Repetisi + Progres Set -->
                                     <div class="grid grid-cols-3 gap-3">
                                         <div class="p-3.5 rounded-2xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] text-center">
                                             <span class="block text-[11px] font-bold uppercase text-[#777777] dark:text-[#AAA0A2]">Target Set</span>
                                             <span class="font-mono tabular-nums text-xl sm:text-2xl font-extrabold text-[#202124] dark:text-[#F5F5F5] mt-0.5 block">
-                                                {{ $currentItem->target_sets }}
+                                                {{ $targetSetsCount }}
                                             </span>
                                         </div>
                                         <div class="p-3.5 rounded-2xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] text-center">
@@ -864,16 +1062,63 @@
                                         <div class="p-3.5 rounded-2xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] text-center">
                                             <span class="block text-[11px] font-bold uppercase text-[#777777] dark:text-[#AAA0A2]">Set Selesai</span>
                                             <div class="flex items-center justify-center gap-2 mt-1">
-                                                <button type="button" wire:click="decrementItemSet({{ $currentItem->id }})"
-                                                        class="w-6 h-6 rounded-lg bg-white dark:bg-[#1A1012] border border-[#E9E9EC] dark:border-[#342427] font-bold text-xs hover:border-[#E54855] cursor-pointer">-</button>
-                                                <span class="font-mono tabular-nums text-base sm:text-lg font-extrabold text-[#202124] dark:text-[#F5F5F5]">
-                                                    {{ $currentItem->completed_sets }}/{{ $currentItem->target_sets }}
+                                                <span class="font-mono tabular-nums text-lg sm:text-xl font-extrabold text-[#202124] dark:text-[#F5F5F5]">
+                                                    {{ $completedSetsCount }}/{{ $targetSetsCount }}
                                                 </span>
-                                                <button type="button" wire:click="incrementItemSet({{ $currentItem->id }})"
-                                                        class="w-6 h-6 rounded-lg bg-[#E54855] text-white font-bold text-xs hover:bg-[#C93646] cursor-pointer">+</button>
+                                                @if($completedSetsCount > 0)
+                                                    <button type="button"
+                                                            wire:click="decrementItemSet({{ $currentItem->id }})"
+                                                            title="Batalkan 1 set terakhir"
+                                                            class="px-2 py-0.5 rounded-lg bg-white dark:bg-[#1A1012] border border-[#E9E9EC] dark:border-[#342427] text-[10px] font-bold text-[#777777] dark:text-[#AAA0A2] hover:border-[#E54855] hover:text-[#E54855] transition-colors cursor-pointer">
+                                                        Undo
+                                                    </button>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Tombol Utama Penyelesaian Set Terpandu (Dengan Jeda Istirahat Antar Set) -->
+                                    @if(!$allSetsDone && $currentSetPayload)
+                                        <div class="pt-1">
+                                            <button type="button"
+                                                    @click="completeSetAndRest({{ \Illuminate\Support\Js::from($currentSetPayload) }})"
+                                                    class="w-full py-3.5 px-5 rounded-2xl bg-[#E54855] hover:bg-[#C93646] text-white text-sm font-extrabold shadow-md shadow-[#E54855]/25 flex items-center justify-center gap-2.5 transition-all cursor-pointer">
+                                                <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                                @if(!$isOnFinalSet)
+                                                    <span>
+                                                        Selesai Set {{ $activeSetNumber }}
+                                                        <template x-if="parseInt(restDuration || 0, 10) > 0">
+                                                            <span>&rarr; Istirahat (<span x-text="restDuration"></span> dtk)</span>
+                                                        </template>
+                                                        <template x-if="parseInt(restDuration || 0, 10) <= 0">
+                                                            <span>&rarr; Lanjut Set {{ $activeSetNumber + 1 }}</span>
+                                                        </template>
+                                                    </span>
+                                                @elseif($nextItem)
+                                                    <span>
+                                                        Selesai Set {{ $activeSetNumber }} (Terakhir)
+                                                        <template x-if="parseInt(restDuration || 0, 10) > 0">
+                                                            <span>&rarr; Istirahat &amp; Gerakan Berikutnya</span>
+                                                        </template>
+                                                        <template x-if="parseInt(restDuration || 0, 10) <= 0">
+                                                            <span>&rarr; Gerakan Berikutnya</span>
+                                                        </template>
+                                                    </span>
+                                                @else
+                                                    <span>Selesai Set Terakhir ({{ $targetSetsCount }}/{{ $targetSetsCount }})</span>
+                                                @endif
+                                            </button>
+                                        </div>
+                                    @elseif($allSetsDone && !$nextItem)
+                                        <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs sm:text-sm font-bold flex items-center gap-2">
+                                            <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span>Semua set pada gerakan terakhir telah selesai! Klik tombol di bawah untuk menyimpan riwayat latihan.</span>
+                                        </div>
+                                    @endif
 
                                     @if($currentExercise?->instructions)
                                         <div class="p-3.5 rounded-2xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] text-xs text-[#777777] dark:text-[#AAA0A2] leading-relaxed max-h-28 overflow-y-auto">
@@ -885,18 +1130,25 @@
                             </div>
                         </div>
 
-                        <!-- LAYAR B: WAKTU ISTIRAHAT (REST TIMER) SEBELUM KE GERAKAN BERIKUTNYA -->
+                        <!-- LAYAR B: WAKTU ISTIRAHAT (ANTAR SET / SEBELUM GERAKAN BERIKUTNYA) -->
                         <div x-show="isResting" x-cloak
                              class="bg-white dark:bg-[#1A1012] rounded-3xl border-2 border-[#E54855] p-6 sm:p-8 shadow-xl text-center space-y-6">
-                            <div class="space-y-1">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E54855]/10 text-[#E54855] text-xs font-extrabold uppercase tracking-wider">
-                                    Waktu Istirahat (Rest)
+                            <div class="space-y-1.5">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E54855]/10 text-[#E54855] text-xs font-extrabold uppercase tracking-wider"
+                                      x-text="restMode === 'set' ? 'Istirahat Antar Set' : 'Istirahat Pindah Gerakan'">
+                                    Istirahat Antar Set
                                 </span>
-                                <h3 class="text-xl sm:text-2xl font-extrabold text-[#202124] dark:text-[#F5F5F5]">
-                                    Tarik Napas &amp; Siapkan Gerakan Berikutnya
+                                <h3 class="text-xl sm:text-2xl font-extrabold text-[#202124] dark:text-[#F5F5F5]"
+                                    x-text="restMode === 'set'
+                                        ? ('Selesai Set ' + restCompletedSetNumber + '/' + restTargetSets + ' — Siapkan Set ' + restNextSetNumber)
+                                        : 'Tarik Napas & Siapkan Gerakan Berikutnya'">
+                                    Tarik Napas &amp; Siapkan Set Berikutnya
                                 </h3>
-                                <p class="text-xs sm:text-sm text-[#777777] dark:text-[#AAA0A2]">
-                                    Otomatis berpindah ke gerakan selanjutnya saat hitung mundur selesai.
+                                <p class="text-xs sm:text-sm text-[#777777] dark:text-[#AAA0A2]"
+                                   x-text="restMode === 'set'
+                                       ? ('Otomatis kembali ke gerakan ini untuk Set ' + restNextSetNumber + ' dari ' + restTargetSets + ' saat hitung mundur selesai.')
+                                       : 'Otomatis berpindah ke gerakan selanjutnya saat hitung mundur selesai.'">
+                                    Otomatis lanjut saat hitung mundur selesai.
                                 </p>
                             </div>
 
@@ -904,7 +1156,7 @@
                             <div class="py-2">
                                 <div class="font-mono tabular-nums text-5xl sm:text-6xl font-extrabold text-[#E54855] tracking-tight"
                                      x-text="formatRest(restRemaining)">
-                                    00:45
+                                    01:00
                                 </div>
                                 <div class="max-w-xs mx-auto mt-3 h-2.5 rounded-full bg-[#F1F1F4] dark:bg-[#251518] overflow-hidden">
                                     <div class="h-full bg-[#E54855] transition-all duration-500 rounded-full"
@@ -912,11 +1164,16 @@
                                 </div>
                             </div>
 
-                            <!-- Tombol Ubah Cepat Durasi Rest Saat Berjalan -->
+                            <!-- Tombol Ubah Cepat Durasi & Jeda Rest Saat Berjalan -->
                             <div class="flex flex-wrap items-center justify-center gap-2">
                                 <button type="button" @click="adjustRestRemaining(-15)"
                                         class="px-3.5 py-2 rounded-xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] hover:border-[#E54855] text-xs font-bold cursor-pointer">
                                     -15 Detik
+                                </button>
+                                <button type="button" @click="restPaused = !restPaused"
+                                        class="px-3.5 py-2 rounded-xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] hover:border-[#E54855] text-xs font-bold cursor-pointer"
+                                        x-text="restPaused ? 'Lanjut Timer' : 'Jeda Timer'">
+                                    Jeda Timer
                                 </button>
                                 <button type="button" @click="adjustRestRemaining(15)"
                                         class="px-3.5 py-2 rounded-xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] hover:border-[#E54855] text-xs font-bold cursor-pointer">
@@ -928,9 +1185,28 @@
                                 </button>
                             </div>
 
-                            <!-- Preview Gerakan Berikutnya -->
+                            <!-- Preview Set Berikutnya (saat Istirahat Antar Set) -->
+                            <div x-show="restMode === 'set'" x-cloak
+                                 class="max-w-md mx-auto p-3.5 rounded-2xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] flex items-center gap-3.5 text-left">
+                                <template x-if="restExerciseImage">
+                                    <div class="w-16 h-16 rounded-xl bg-white dark:bg-[#100809] border border-[#E9E9EC] dark:border-[#342427] p-1.5 flex items-center justify-center shrink-0">
+                                        <img :src="restExerciseImage" :alt="restExerciseName" class="w-full h-full object-contain">
+                                    </div>
+                                </template>
+                                <div class="min-w-0 flex-1">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#E54855]"
+                                          x-text="'Set Berikutnya (Set ' + restNextSetNumber + ' dari ' + restTargetSets + ')'"></span>
+                                    <h4 class="text-sm sm:text-base font-extrabold text-[#202124] dark:text-[#F5F5F5] truncate" x-text="restExerciseName"></h4>
+                                    <p class="text-xs text-[#777777] dark:text-[#AAA0A2] font-semibold">
+                                        Target: <span x-text="restExerciseReps"></span> Reps &bull; <span x-text="restExerciseMuscle"></span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Preview Gerakan Berikutnya (saat Istirahat Pindah Gerakan) -->
                             @if($nextItem)
-                                <div class="max-w-md mx-auto p-3.5 rounded-2xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] flex items-center gap-3.5 text-left">
+                                <div x-show="restMode === 'exercise'" x-cloak
+                                     class="max-w-md mx-auto p-3.5 rounded-2xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] flex items-center gap-3.5 text-left">
                                     @if($nextImage)
                                         <div class="w-16 h-16 rounded-xl bg-white dark:bg-[#100809] border border-[#E9E9EC] dark:border-[#342427] p-1.5 flex items-center justify-center shrink-0">
                                             <img src="{{ $nextImage }}" alt="{{ $nextItem->exercise_name }}" class="w-full h-full object-contain">
@@ -948,11 +1224,14 @@
                             <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
                                 <button type="button" @click="stopRestTimer()"
                                         class="px-4 py-2.5 rounded-xl bg-[#F1F1F4] dark:bg-[#251518] text-xs sm:text-sm font-bold text-[#202124] dark:text-[#F5F5F5] cursor-pointer">
-                                    &larr; Kembali ke Gerakan Tadi
+                                    &larr; Kembali ke Layar Gerakan
                                 </button>
-                                <button type="button" @click="finishRestAndAdvance()"
-                                        class="px-5 py-2.5 rounded-xl bg-[#E54855] hover:bg-[#C93646] text-white text-xs sm:text-sm font-extrabold shadow-md shadow-[#E54855]/25 cursor-pointer">
-                                    Lewati Istirahat &amp; Mulai Gerakan Berikutnya &rarr;
+                                <button type="button" @click="finishRest()"
+                                        class="px-5 py-2.5 rounded-xl bg-[#E54855] hover:bg-[#C93646] text-white text-xs sm:text-sm font-extrabold shadow-md shadow-[#E54855]/25 cursor-pointer"
+                                        x-text="restMode === 'set'
+                                            ? ('Lewati Istirahat & Mulai Set ' + restNextSetNumber + ' →')
+                                            : 'Lewati Istirahat & Mulai Gerakan Berikutnya →'">
+                                    Lewati Istirahat &rarr;
                                 </button>
                             </div>
                         </div>
@@ -1003,7 +1282,7 @@
             </div>
 
             <!-- BOTTOM NAVIGATION BAR: TOMBOL MUNDUR (SEBELUMNYA) & LANJUT (BERIKUTNYA DENGAN REST) / SELESAI -->
-            <div class="bg-white dark:bg-[#1A1012] border-t border-[#E9E9EC] dark:border-[#342427] px-4 sm:px-6 py-4 shrink-0">
+            <div x-show="!isResting" class="bg-white dark:bg-[#1A1012] border-t border-[#E9E9EC] dark:border-[#342427] px-4 sm:px-6 py-4 shrink-0">
                 <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
                     <!-- Tombol Mundur (Gerakan Sebelumnya) -->
                     <button type="button"
@@ -1021,15 +1300,35 @@
 
                     <!-- Info Tengah -->
                     <div class="text-center text-xs text-[#777777] dark:text-[#AAA0A2] font-semibold">
-                        @if($nextItem)
+                        @if(!$allSetsDone && !$isOnFinalSet)
+                            <span>Berikutnya: <strong class="text-[#202124] dark:text-[#F5F5F5]">Set {{ $activeSetNumber + 1 }} dari {{ $targetSetsCount }}</strong> (Rest <span x-text="restDuration"></span> dtk)</span>
+                        @elseif($nextItem)
                             <span>Selanjutnya: <strong class="text-[#202124] dark:text-[#F5F5F5]">{{ $nextItem->exercise_name }}</strong> (Rest <span x-text="restDuration"></span> dtk)</span>
                         @else
                             <span class="text-[#E54855] font-bold">Gerakan Terakhir dalam Sesi Ini</span>
                         @endif
                     </div>
 
-                    <!-- Tombol Lanjut (Ke Gerakan Berikutnya + Rest) atau Selesaikan Sesi -->
-                    @if($nextItem && $currentItem)
+                    <!-- Tombol Lanjut (Selesai Set + Rest / Ke Gerakan Berikutnya + Rest / Selesaikan Sesi) -->
+                    @if(!$allSetsDone && !$isOnFinalSet && $currentSetPayload)
+                        <button type="button"
+                                @click="completeSetAndRest({{ \Illuminate\Support\Js::from($currentSetPayload) }})"
+                                class="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#E54855] hover:bg-[#C93646] text-white text-xs sm:text-sm font-extrabold shadow-md shadow-[#E54855]/25 flex items-center justify-center gap-2 transition-colors cursor-pointer">
+                            <span>Selesai Set {{ $activeSetNumber }} &amp; Istirahat</span>
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    @elseif(!$allSetsDone && $isOnFinalSet && $nextItem && $currentSetPayload)
+                        <button type="button"
+                                @click="completeSetAndRest({{ \Illuminate\Support\Js::from($currentSetPayload) }})"
+                                class="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#E54855] hover:bg-[#C93646] text-white text-xs sm:text-sm font-extrabold shadow-md shadow-[#E54855]/25 flex items-center justify-center gap-2 transition-colors cursor-pointer">
+                            <span>Selesai Set Terakhir &amp; Gerakan Berikutnya</span>
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    @elseif($nextItem && $currentItem)
                         <button type="button"
                                 @click="triggerNextWithRest({{ $currentItem->id }}, {{ $currentIndex + 1 }})"
                                 class="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#E54855] hover:bg-[#C93646] text-white text-xs sm:text-sm font-extrabold shadow-md shadow-[#E54855]/25 flex items-center justify-center gap-2 transition-colors cursor-pointer">

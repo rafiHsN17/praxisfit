@@ -13,10 +13,15 @@ class ExerciseCatalog extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $filterMuscle = '';
+
     public string $filterEquipment = '';
+
     public string $filterDifficulty = '';
+
     public string $filterCategory = '';
+
     public $selectedExercise = null;
 
     public const STANDARD_EQUIPMENTS = [
@@ -82,7 +87,7 @@ class ExerciseCatalog extends Component
     {
         $query = Exercise::query()
             ->when(trim($this->search) !== '', function ($q) {
-                $term = '%' . trim($this->search) . '%';
+                $term = '%'.trim($this->search).'%';
                 $q->where(function ($sub) use ($term) {
                     $sub->where('name', 'like', $term)
                         ->orWhere('target_muscle', 'like', $term)

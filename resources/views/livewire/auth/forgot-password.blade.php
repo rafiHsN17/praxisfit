@@ -1,10 +1,8 @@
 <div class="w-full max-w-md mx-auto bg-white dark:bg-[#1A1012] rounded-3xl border border-[#E9E9EC] dark:border-[#342427] p-7 sm:p-9 shadow-2xl">
 
     <div class="flex justify-center mb-5">
-        <a href="{{ url('/') }}" wire:navigate class="inline-flex items-center gap-3">
-            <div class="w-11 h-11 rounded-2xl bg-[#E54855] flex items-center justify-center shadow-md shadow-[#E54855]/25">
-                <x-logo class="w-7 h-7 text-white" />
-            </div>
+        <a href="{{ url('/') }}" wire:navigate class="inline-flex items-center gap-3 group">
+            <x-logo-badge size="lg" class="transition-transform duration-300 group-hover:scale-105" />
         </a>
     </div>
 

@@ -1,9 +1,7 @@
 <div class="w-full max-w-md mx-auto bg-white dark:bg-[#1A1012] rounded-3xl border border-[#E9E9EC] dark:border-[#342427] p-7 sm:p-9 shadow-2xl">
 
     <div class="flex justify-center mb-5">
-        <div class="w-11 h-11 rounded-2xl bg-[#E54855] flex items-center justify-center shadow-md shadow-[#E54855]/25">
-            <x-logo class="w-7 h-7 text-white" />
-        </div>
+        <x-logo-badge size="lg" />
     </div>
 
     <div class="text-center mb-6 space-y-1">

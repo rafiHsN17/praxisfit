@@ -5,7 +5,7 @@
                 Kelola <span class="text-[#E54855]">Gerakan Latihan</span>
             </h1>
             <p class="text-sm text-[#777777] dark:text-[#AAA0A2] mt-1">
-                Tambah atau perbarui gerakan katalog, kategori, alat, dan gambar sekuensial (awal, inti, akhir).
+                Tambah atau edit gerakan katalog, peralatan, kecocokan rekomendasi metode latihan, dan sekuensi gambar.
             </p>
         </div>
         <button type="button" wire:click="openModal" class="px-5 py-2.5 bg-[#E54855] hover:bg-[#C93646] text-white text-sm font-bold rounded-xl shadow-sm transition-colors shrink-0 cursor-pointer">
@@ -25,6 +25,24 @@
         </div>
     @endif
 
+    <!-- Search & Filter Bar -->
+    <div class="bg-white dark:bg-[#1A1012] border border-[#E9E9EC] dark:border-[#342427] rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 shadow-xs">
+        <div class="sm:col-span-8">
+            <input type="text" wire:model.live.debounce.250ms="search"
+                   placeholder="Cari nama gerakan, target otot, atau peralatan..."
+                   class="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] text-sm text-[#202124] dark:text-[#F5F5F5] focus:outline-none focus:border-[#E54855]">
+        </div>
+        <div class="sm:col-span-4">
+            <select wire:model.live="filterEquipment"
+                    class="w-full px-3.5 py-2.5 rounded-xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] text-sm text-[#202124] dark:text-[#F5F5F5] focus:outline-none focus:border-[#E54855]">
+                <option value="">Semua Peralatan</option>
+                @foreach($equipments as $eq)
+                    <option value="{{ $eq }}">{{ $eq }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
     <div class="bg-white dark:bg-[#1A1012] border border-[#E9E9EC] dark:border-[#342427] rounded-2xl overflow-hidden shadow-xs">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
@@ -33,6 +51,7 @@
                         <th class="px-5 py-3.5 font-bold w-16">Media</th>
                         <th class="px-5 py-3.5 font-bold">Nama Gerakan</th>
                         <th class="px-5 py-3.5 font-bold text-center">Fokus Otot</th>
+                        <th class="px-5 py-3.5 font-bold">Rekomendasi Metode</th>
                         <th class="px-5 py-3.5 font-bold text-center">Tingkat</th>
                         <th class="px-5 py-3.5 font-bold text-right">Aksi</th>
                     </tr>
@@ -60,6 +79,15 @@
                                     {{ $exercise->target_muscle }}
                                 </span>
                             </td>
+                            <td class="px-5 py-3.5">
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach($exercise->suitableMethods() as $mb)
+                                        <span class="px-2 py-0.5 rounded bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] text-[10px] font-bold text-[#202124] dark:text-[#F5F5F5]">
+                                            {{ str_replace('Suitable for ', '', $mb['label']) }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </td>
                             <td class="px-5 py-3.5 text-center">
                                 <span class="px-2.5 py-1 rounded-lg text-xs font-bold border border-[#E9E9EC] dark:border-[#342427] bg-[#F7F7F8] dark:bg-[#251518] text-[#202124] dark:text-[#F5F5F5]">
                                     {{ $exercise->difficulty }}
@@ -76,14 +104,20 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-5 py-12 text-center text-sm text-[#777777] dark:text-[#AAA0A2]">
-                                Belum ada gerakan di database.
+                            <td colspan="6" class="px-5 py-12 text-center text-sm text-[#777777] dark:text-[#AAA0A2]">
+                                Tidak ada gerakan yang cocok dengan pencarian Anda.
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+
+        @if($exercises->hasPages())
+            <div class="p-4 border-t border-[#E9E9EC] dark:border-[#342427]">
+                {{ $exercises->links() }}
+            </div>
+        @endif
     </div>
 
     <!-- Modal Form -->
@@ -92,7 +126,7 @@
             <div class="bg-white dark:bg-[#1A1012] border border-[#E9E9EC] dark:border-[#342427] rounded-2xl w-full max-w-4xl shadow-2xl relative my-8 overflow-hidden">
 
                 <div class="p-5 sm:p-6 border-b border-[#E9E9EC] dark:border-[#342427] flex justify-between items-center bg-white dark:bg-[#1A1012]">
-                    <h2 class="text-lg font-extrabold text-[#202124] dark:text-[#F5F5F5]">{{ $editId ? 'Edit Gerakan' : 'Tambah Gerakan Baru' }}</h2>
+                    <h2 class="text-lg font-extrabold text-[#202124] dark:text-[#F5F5F5]">{{ $editId ? 'Edit Gerakan & Rekomendasi' : 'Tambah Gerakan Baru' }}</h2>
                     <button type="button" wire:click="closeModal" class="text-[#777777] hover:text-[#E54855] p-1 text-xl font-bold cursor-pointer">&times;</button>
                 </div>
 
@@ -138,9 +172,28 @@
                                     </div>
                                 </div>
 
+                                <!-- Edit Rekomendasi Metode Latihan -->
+                                <div>
+                                    <label class="block text-xs font-bold text-[#777777] dark:text-[#AAA0A2] mb-1.5">Rekomendasi Metode Latihan (Smart Generator &amp; Katalog)</label>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        @foreach($methodOptions as $mKey => $mLabel)
+                                            @php $isMethodActive = in_array($mKey, $recommended_methods, true); @endphp
+                                            <button type="button" wire:click="toggleRecommendedMethod('{{ $mKey }}')"
+                                                    class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer {{ $isMethodActive ? 'bg-[#E54855] border-[#E54855] text-white' : 'bg-[#F7F7F8] dark:bg-[#251518] border-[#E9E9EC] dark:border-[#342427] text-[#202124] dark:text-[#F5F5F5]' }}">
+                                                {{ $isMethodActive ? '✓ ' : '+ ' }}{{ $mLabel }}
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-[#777777] dark:text-[#AAA0A2] mb-1.5">Alternatif Alat Rumahan (Opsional)</label>
+                                    <input type="text" wire:model="alternative_equipment" class="w-full bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] rounded-xl px-3.5 py-2.5 text-sm text-[#202124] dark:text-[#F5F5F5] focus:outline-none focus:border-[#E54855]" placeholder="Cth: Bisa diganti tas berisi buku...">
+                                </div>
+
                                 <div>
                                     <label class="block text-xs font-bold text-[#777777] dark:text-[#AAA0A2] mb-1.5">Instruksi Eksekusi <span class="text-[#E54855]">*</span></label>
-                                    <textarea wire:model="instructions" rows="5" class="w-full bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] rounded-xl px-3.5 py-2.5 text-sm text-[#202124] dark:text-[#F5F5F5] focus:outline-none focus:border-[#E54855]" placeholder="Jelaskan langkah eksekusi..."></textarea>
+                                    <textarea wire:model="instructions" rows="4" class="w-full bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] rounded-xl px-3.5 py-2.5 text-sm text-[#202124] dark:text-[#F5F5F5] focus:outline-none focus:border-[#E54855]" placeholder="Jelaskan langkah eksekusi..."></textarea>
                                     @error('instructions') <span class="text-[#E54855] text-xs mt-1 block font-semibold">{{ $message }}</span> @enderror
                                 </div>
                             </div>

@@ -13,8 +13,11 @@ use Livewire\Component;
 class ResetPassword extends Component
 {
     public string $token = '';
+
     public string $email = '';
+
     public string $password = '';
+
     public string $password_confirmation = '';
 
     public function mount(string $token): void
@@ -42,7 +45,7 @@ class ResetPassword extends Component
 
         // Terima token baik dari Password::broker maupun token custom yang ter-hash
         $user = User::where('email', $email)->first();
-        if (!$user || !$record || !Hash::check($this->token, $record->token)) {
+        if (! $user || ! $record || ! Hash::check($this->token, $record->token)) {
             $status = Password::reset(
                 [
                     'email' => $email,
@@ -57,6 +60,7 @@ class ResetPassword extends Component
 
             if ($status !== Password::PASSWORD_RESET) {
                 $this->addError('email', 'Token atur ulang kata sandi tidak valid atau sudah kedaluwarsa.');
+
                 return;
             }
 
@@ -74,4 +78,3 @@ class ResetPassword extends Component
         return view('livewire.auth.reset-password')->layout('components.layouts.auth');
     }
 }
-

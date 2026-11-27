@@ -5,12 +5,6 @@
         <div class="absolute top-0 left-0 w-full h-1 bg-[#E54855]"></div>
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div class="space-y-2">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E54855]/10 border border-[#E54855]/25 text-[#E54855] text-xs font-bold uppercase tracking-wider">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
-                    </svg>
-                    Exercise Library
-                </div>
                 <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#202124] dark:text-[#F5F5F5]">
                     Katalog <span class="text-[#E54855]">Gerakan Latihan</span>
                 </h1>
@@ -380,6 +374,17 @@
                                 <h3 class="text-2xl sm:text-3xl font-extrabold text-[#202124] dark:text-[#F5F5F5] tracking-tight">
                                     {{ $selectedExercise->name }}
                                 </h3>
+
+                                @php $methodBadges = $selectedExercise->suitableMethods(); @endphp
+                                @if(!empty($methodBadges))
+                                    <div class="flex flex-wrap gap-1.5 pt-1">
+                                        @foreach($methodBadges as $mb)
+                                            <span class="px-2.5 py-1 rounded-lg bg-[#E54855]/8 text-[#E54855] border border-[#E54855]/25 text-[11px] font-bold">
+                                                {{ $mb['label'] }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
 
                             @if($selectedExercise->alternative_equipment)
@@ -456,6 +461,32 @@
                                     <p class="text-sm text-[#777777] dark:text-[#AAA0A2] italic">Instruksi belum tersedia, pastikan postur tubuh tetap stabil dan terkontrol.</p>
                                 @endif
                             </div>
+
+                            @php $alternatives = $selectedExercise->findAlternatives(4); @endphp
+                            @if($alternatives->isNotEmpty())
+                                <div class="pt-4 border-t border-[#E9E9EC] dark:border-[#342427] space-y-3">
+                                    <h4 class="text-xs font-extrabold text-[#202124] dark:text-[#F5F5F5] uppercase tracking-widest flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full bg-[#E54855]"></span>
+                                        Alternatif Gerakan Pengganti
+                                    </h4>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                        @foreach($alternatives as $alt)
+                                            <button type="button" wire:click="openExerciseDetail({{ $alt->id }})"
+                                                    class="p-3 rounded-xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] hover:border-[#E54855] flex items-center gap-3 text-left transition-colors cursor-pointer">
+                                                @if($alt->image_1 || $alt->icon)
+                                                    <div class="w-12 h-12 rounded-lg bg-white dark:bg-[#100809] border border-[#E9E9EC] dark:border-[#342427] p-1 flex items-center justify-center shrink-0">
+                                                        <img src="{{ $alt->image_1 ?? $alt->icon }}" alt="{{ $alt->name }}" class="w-full h-full object-contain">
+                                                    </div>
+                                                @endif
+                                                <div class="min-w-0">
+                                                    <div class="text-xs font-bold text-[#202124] dark:text-[#F5F5F5] truncate">{{ $alt->name }}</div>
+                                                    <div class="text-[10px] text-[#777777] dark:text-[#AAA0A2]">{{ $alt->equipment ?? 'Bodyweight' }} &bull; {{ $alt->difficulty ?? 'Menengah' }}</div>
+                                                </div>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

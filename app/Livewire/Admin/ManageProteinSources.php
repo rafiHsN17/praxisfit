@@ -14,10 +14,15 @@ class ManageProteinSources extends Component
     public $sources;
 
     public $name = '';
+
     public $protein_per_100g = '';
+
     public $calories_per_100g = '';
+
     public $fat_per_100g = '';
+
     public $carbs_per_100g = '';
+
     public $editId = null;
 
     public $isModalOpen = false;
@@ -58,7 +63,7 @@ class ManageProteinSources extends Component
     public function save()
     {
         $this->validate([
-            'name' => 'required|string|max:255|unique:protein_sources,name,' . $this->editId,
+            'name' => 'required|string|max:255|unique:protein_sources,name,'.$this->editId,
             'protein_per_100g' => 'required|numeric|min:0|max:100',
             'calories_per_100g' => 'nullable|numeric|min:0|max:1000',
             'fat_per_100g' => 'nullable|numeric|min:0|max:100',

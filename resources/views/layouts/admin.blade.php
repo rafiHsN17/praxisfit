@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', $title ?? 'Admin Panel - PraxisFit')</title>
+    <title>@yield('title', $title ?? 'Panel Admin - PraxisFit')</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/praxisfit-logo.svg') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/praxisfit-logo.svg') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -47,9 +47,7 @@
 
                 <!-- Logo & Brand -->
                 <a href="{{ route('admin.dashboard') }}" wire:navigate class="flex items-center gap-3 shrink-0 group">
-                    <div class="w-9 h-9 rounded-xl bg-[#E54855] flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shadow-xs">
-                        <x-logo class="w-5 h-5 text-white" />
-                    </div>
+                    <x-logo-badge size="md" class="transition-transform duration-300 group-hover:scale-105" />
                     <span class="font-extrabold text-lg sm:text-xl tracking-tight text-[#202124] dark:text-[#F5F5F5]">
                         Admin <span class="text-[#E54855]">PraxisFit</span>
                     </span>
@@ -59,7 +57,7 @@
                 <div class="hidden lg:flex items-center gap-1.5 text-xs sm:text-sm tracking-tight">
                     <a href="{{ route('admin.dashboard') }}" wire:navigate
                        class="px-3.5 py-2 rounded-xl transition-colors {{ request()->routeIs('admin.dashboard') ? 'text-[#E54855] font-bold bg-[#E54855]/10' : 'text-[#777777] dark:text-[#AAA0A2] hover:text-[#E54855] font-semibold' }}">
-                        Dashboard
+                        Dasbor
                     </a>
                     <a href="{{ route('admin.exercises') }}" wire:navigate
                        class="px-3.5 py-2 rounded-xl transition-colors {{ request()->routeIs('admin.exercises') ? 'text-[#E54855] font-bold bg-[#E54855]/10' : 'text-[#777777] dark:text-[#AAA0A2] hover:text-[#E54855] font-semibold' }}">
@@ -86,9 +84,6 @@
                             <span class="text-xs font-bold text-[#777777] dark:text-[#AAA0A2] border-r border-[#E9E9EC] dark:border-[#342427] pr-3">
                                 {{ Auth::guard('admin')->user()->name }}
                             </span>
-                            <a href="{{ url('/') }}" class="text-xs font-semibold px-3 py-1.5 bg-[#F1F1F4] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] rounded-lg hover:border-[#E54855] transition-colors">
-                                Web User
-                            </a>
                             <form method="POST" action="{{ route('admin.logout') }}" class="inline m-0 p-0">
                                 @csrf
                                 <button type="submit" class="px-3 py-1.5 rounded-lg border border-[#E9E9EC] dark:border-[#342427] text-xs font-semibold text-[#C93646] dark:text-[#E54855] hover:bg-[#E54855]/10 transition-colors cursor-pointer">

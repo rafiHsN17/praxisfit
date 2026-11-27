@@ -18,6 +18,8 @@ class WorkoutSessionItem extends Model
         'target_sets',
         'completed_sets',
         'target_reps',
+        'rest_seconds',
+        'intensity_note',
         'weight_kg',
         'is_completed',
         'notes',
@@ -29,6 +31,7 @@ class WorkoutSessionItem extends Model
         return [
             'target_sets' => 'integer',
             'completed_sets' => 'integer',
+            'rest_seconds' => 'integer',
             'weight_kg' => 'float',
             'is_completed' => 'boolean',
             'sort_order' => 'integer',
@@ -45,4 +48,3 @@ class WorkoutSessionItem extends Model
         return $this->belongsTo(Exercise::class);
     }
 }
-

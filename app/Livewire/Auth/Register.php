@@ -3,7 +3,6 @@
 namespace App\Livewire\Auth;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Attributes\Title;
@@ -13,9 +12,13 @@ use Livewire\Component;
 class Register extends Component
 {
     public string $name = '';
+
     public string $email = '';
+
     public string $phone = '';
+
     public string $password = '';
+
     public string $password_confirmation = '';
 
     protected array $rules = [
@@ -50,11 +53,11 @@ class Register extends Component
 
         $cleanPhone = preg_replace('/[^0-9]/', '', $this->phone);
         if (str_starts_with($cleanPhone, '62')) {
-            $formattedPhone = '+' . $cleanPhone;
+            $formattedPhone = '+'.$cleanPhone;
         } elseif (str_starts_with($cleanPhone, '0')) {
-            $formattedPhone = '+62' . substr($cleanPhone, 1);
+            $formattedPhone = '+62'.substr($cleanPhone, 1);
         } else {
-            $formattedPhone = '+62' . $cleanPhone;
+            $formattedPhone = '+62'.$cleanPhone;
         }
 
         $email = strtolower(trim($this->email));
@@ -72,7 +75,7 @@ class Register extends Component
             $userData['phone'] = $formattedPhone;
         }
 
-        $user = User::create($userData);
+        User::create($userData);
 
         return redirect()
             ->route('login')

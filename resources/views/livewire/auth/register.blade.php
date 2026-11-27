@@ -3,9 +3,7 @@
     <!-- Logo Resmi PraxisFit -->
     <div class="flex justify-center mb-5">
         <a href="{{ url('/') }}" wire:navigate class="inline-flex items-center gap-3 group">
-            <div class="w-11 h-11 rounded-2xl bg-[#E54855] flex items-center justify-center shadow-md shadow-[#E54855]/25 transition-transform duration-300 group-hover:scale-105">
-                <x-logo class="w-7 h-7 text-white" />
-            </div>
+            <x-logo-badge size="lg" class="transition-transform duration-300 group-hover:scale-105" />
             <span class="font-extrabold text-2xl tracking-tight text-[#202124] dark:text-[#F5F5F5]">
                 Praxis<span class="text-[#E54855]">Fit</span>
             </span>

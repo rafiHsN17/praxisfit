@@ -1,8 +1,6 @@
 <div class="w-full space-y-6 bg-white dark:bg-[#1A1012] p-8 rounded-3xl border border-[#E9E9EC] dark:border-[#342427] shadow-2xl">
     <div class="flex justify-center">
-        <div class="w-12 h-12 rounded-2xl bg-[#E54855] flex items-center justify-center shadow-md shadow-[#E54855]/25">
-            <x-logo class="w-7 h-7 text-white" />
-        </div>
+        <x-logo-badge size="xl" />
     </div>
 
     <div class="text-center space-y-1">

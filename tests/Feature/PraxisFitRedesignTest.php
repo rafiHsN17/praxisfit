@@ -10,26 +10,21 @@ use App\Livewire\Admin\ManageProteinSources;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
-use App\Livewire\Auth\VerifyOtp;
 use App\Livewire\ExerciseCatalog;
 use App\Livewire\FaqPage;
 use App\Livewire\MyWorkoutPlanner;
 use App\Livewire\ProteinCalculator;
-use App\Mail\OtpMail;
 use App\Models\Admin;
 use App\Models\Exercise;
 use App\Models\Faq;
 use App\Models\FitnessGoal;
 use App\Models\ProteinLog;
 use App\Models\ProteinSource;
-use App\Models\SupportMessage;
 use App\Models\User;
-use App\Models\WorkoutRoutine;
 use App\Models\WorkoutSession;
 use App\Models\WorkoutSessionItem;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -295,6 +290,102 @@ class PraxisFitRedesignTest extends TestCase
             ->assertSet('mismatchIsFuture', true);
     }
 
+    public function test_workout_planner_interset_rest_flow_and_rest_duration_sync(): void
+    {
+        $this->seedCoreCatalog();
+
+        $user = User::factory()->create(['email_verified_at' => now()]);
+        $this->actingAs($user);
+
+        $exercises = Exercise::orderBy('id')->take(2)->get();
+        $today = Carbon::now('Asia/Jakarta')->toDateString();
+
+        $session = WorkoutSession::create([
+            'user_id' => $user->id,
+            'name' => 'Sesi Inter-Set Rest',
+            'category' => 'Hypertrophy',
+            'scheduled_date' => $today,
+            'status' => WorkoutSession::STATUS_IN_PROGRESS,
+            'started_at' => Carbon::now('Asia/Jakarta'),
+        ]);
+
+        $item1 = WorkoutSessionItem::create([
+            'workout_session_id' => $session->id,
+            'exercise_id' => $exercises[0]->id,
+            'exercise_name' => $exercises[0]->name,
+            'target_muscle' => $exercises[0]->target_muscle,
+            'target_sets' => 3,
+            'completed_sets' => 0,
+            'target_reps' => '8-12',
+            'rest_seconds' => 90,
+            'sort_order' => 1,
+        ]);
+
+        $item2 = WorkoutSessionItem::create([
+            'workout_session_id' => $session->id,
+            'exercise_id' => $exercises[1]->id,
+            'exercise_name' => $exercises[1]->name,
+            'target_muscle' => $exercises[1]->target_muscle,
+            'target_sets' => 2,
+            'completed_sets' => 0,
+            'target_reps' => '12-15',
+            'rest_seconds' => 45,
+            'sort_order' => 2,
+        ]);
+
+        // Membuka sesi aktif otomatis menyesuaikan restDurationSeconds dari item pertama (90 dtk)
+        $planner = Livewire::test(MyWorkoutPlanner::class)
+            ->call('openActiveSession', $session->id)
+            ->assertSet('activeSessionId', $session->id)
+            ->assertSet('activeExerciseIndex', 0)
+            ->assertSet('restDurationSeconds', 90)
+            ->assertSee('Selesai Set 1')
+            ->assertSee('Istirahat Antar Set');
+
+        // Selesaikan Set 1 dari 3 -> completed_sets = 1, is_completed = false, tetap di gerakan 0
+        $planner->call('completeSetStep', $item1->id)
+            ->assertSet('activeExerciseIndex', 0)
+            ->assertSee('Selesai Set 2');
+
+        $item1->refresh();
+        $this->assertEquals(1, $item1->completed_sets);
+        $this->assertFalse($item1->is_completed);
+
+        // Selesaikan Set 2 & Set 3 -> completed_sets = 3 (capped di target_sets), is_completed = true, progress = 50%
+        $planner->call('completeSetStep', $item1->id)
+            ->call('completeSetStep', $item1->id)
+            ->call('completeSetStep', $item1->id);
+
+        $item1->refresh();
+        $session->refresh();
+        $this->assertEquals(3, $item1->completed_sets);
+        $this->assertTrue($item1->is_completed);
+        $this->assertEquals(50, $session->progress_percent);
+
+        // Undo 1 set -> completed_sets = 2, is_completed kembali false, progress = 0%
+        $planner->call('decrementItemSet', $item1->id);
+        $item1->refresh();
+        $session->refresh();
+        $this->assertEquals(2, $item1->completed_sets);
+        $this->assertFalse($item1->is_completed);
+        $this->assertEquals(0, $session->progress_percent);
+
+        // Pindah ke gerakan kedua -> restDurationSeconds otomatis ikut 45 dtk
+        $planner->call('completeItemAndAdvance', $item1->id, 1)
+            ->assertSet('activeExerciseIndex', 1)
+            ->assertSet('restDurationSeconds', 45);
+
+        // Override manual rest user -> tidak berubah saat pindah gerakan, bisa di-reset ke Auto
+        $planner->call('setCustomRestDuration', 120)
+            ->assertSet('restDurationSeconds', 120)
+            ->assertSet('useCustomRestDuration', true)
+            ->call('goToExerciseStep', 0)
+            ->assertSet('restDurationSeconds', 120)
+            ->call('resetRestToRecommended')
+            ->assertSet('useCustomRestDuration', false)
+            ->assertSet('restDurationSeconds', 90);
+    }
+
     public function test_faq_filtering_and_support_message_submission(): void
     {
         $this->seedCoreCatalog();
@@ -360,7 +451,7 @@ class PraxisFitRedesignTest extends TestCase
         Livewire::test(ForgotPassword::class)
             ->set('email', 'budi@bebas.com')
             ->call('sendResetLink')
-            ->assertSet('statusMessage', fn ($val) => !empty($val));
+            ->assertSet('statusMessage', fn ($val) => ! empty($val));
 
         $this->assertDatabaseHas('password_reset_tokens', ['email' => 'budi@bebas.com']);
     }
@@ -393,8 +484,13 @@ class PraxisFitRedesignTest extends TestCase
             ->assertRedirect(route('admin.dashboard'));
 
         $this->assertTrue(auth()->guard('admin')->check());
+        $this->assertFalse(auth()->guard('web')->check());
 
-        $this->get('/admin/dashboard')->assertOk();
+        // Admin tidak boleh masuk ke halaman user dan otomatis diarahkan ke Dasbor Admin
+        $this->get('/')->assertRedirect(route('admin.dashboard'));
+        $this->get('/program-generator')->assertRedirect(route('admin.dashboard'));
+
+        $this->get('/admin/dashboard')->assertOk()->assertSee('Dasbor Admin - PraxisFit');
         $this->get('/admin/exercises')->assertOk();
         $this->get('/admin/goals')->assertOk();
         $this->get('/admin/protein-sources')->assertOk();
@@ -423,4 +519,3 @@ class PraxisFitRedesignTest extends TestCase
         ]);
     }
 }
-

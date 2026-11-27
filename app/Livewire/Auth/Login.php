@@ -13,7 +13,9 @@ use Livewire\Component;
 class Login extends Component
 {
     public string $email = '';
+
     public string $password = '';
+
     public bool $remember = false;
 
     protected array $rules = [
@@ -41,20 +43,12 @@ class Login extends Component
                     'password' => Hash::make('tinju-kangguru-123'),
                 ]
             );
-            $user = User::updateOrCreate(
-                ['name' => 'admin-praxisfit-1'],
-                [
-                    'email' => 'admin@praxisfit.com',
-                    'password' => Hash::make('tinju-kangguru-123'),
-                    'email_verified_at' => now(),
-                ]
-            );
 
+            Auth::guard('web')->logout();
             Auth::guard('admin')->login($admin, $this->remember);
-            Auth::guard('web')->login($user, $this->remember);
             session()->regenerate();
 
-            return redirect()->route('admin.dashboard')->with('success', 'Selamat datang di Admin Panel!');
+            return redirect()->route('admin.dashboard')->with('success', 'Selamat datang di Panel Admin!');
         }
 
         // Cek juga jika yang masuk adalah akun di tabel admins (berdasarkan nama atau email)
@@ -63,10 +57,11 @@ class Login extends Component
             ->first();
 
         if ($adminAccount && Hash::check($this->password, $adminAccount->password)) {
+            Auth::guard('web')->logout();
             Auth::guard('admin')->login($adminAccount, $this->remember);
             session()->regenerate();
 
-            return redirect()->route('admin.dashboard')->with('success', 'Selamat datang di Admin Panel!');
+            return redirect()->route('admin.dashboard')->with('success', 'Selamat datang di Panel Admin!');
         }
 
         // Cari user berdasarkan email (lowercase) atau nama lengkap sesuai data pendaftaran
@@ -86,19 +81,6 @@ class Login extends Component
 
             Auth::login($user, $this->remember);
             session()->regenerate();
-
-            if ($user->name === 'admin-praxisfit-1') {
-                $admin = Admin::updateOrCreate(
-                    ['email' => 'admin@praxisfit.com'],
-                    [
-                        'name' => 'admin-praxisfit-1',
-                        'password' => $user->password,
-                    ]
-                );
-                Auth::guard('admin')->login($admin, $this->remember);
-
-                return redirect()->route('admin.dashboard')->with('success', 'Selamat datang di Admin Panel!');
-            }
 
             return redirect()->intended(route('dashboard'))->with('success', 'Selamat datang kembali di PraxisFit!');
         }

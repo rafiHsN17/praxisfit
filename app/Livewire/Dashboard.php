@@ -4,38 +4,55 @@ namespace App\Livewire;
 
 use App\Models\Exercise;
 use App\Models\ProteinLog;
+use App\Models\WorkoutProgram;
 use App\Models\WorkoutRoutine;
 use App\Models\WorkoutSession;
 use Carbon\Carbon;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Title('Home - PraxisFit Command Center')]
+#[Title('Beranda - PraxisFit')]
 class Dashboard extends Component
 {
     public bool $isGuest = true;
+
     public string $todayFormatted = '';
+
     public string $todayDate = '';
 
     // Nutrition Metrics (User-scoped)
     public float $totalProteinToday = 0;
+
     public float $targetProtein = 150;
+
     public float $totalCaloriesToday = 0;
+
     public float $targetCalories = 2000;
 
     // Catalog & Routine Metrics
     public int $totalExercises = 0;
+
     public int $totalRoutines = 0;
 
     // Workout Session Tracking Metrics (User-scoped, Real DB)
     public $todaySessions = [];
+
     public int $todaySessionsCount = 0;
+
     public int $completedSessionsCount = 0;
+
     public int $unfinishedSessionsCount = 0;
+
     public int $missedSessionsCount = 0;
+
     public int $dailyWorkoutProgress = 0;
+
     public ?array $latestHistorySession = null;
+
     public ?array $nextScheduledSession = null;
+
+    public ?array $activeProgramSummary = null;
+
     public array $scheduleNotifications = [];
 
     public function mount(): void
@@ -47,8 +64,9 @@ class Dashboard extends Component
 
         $this->totalExercises = Exercise::count();
 
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             $this->isGuest = true;
+
             return;
         }
 
@@ -86,6 +104,7 @@ class Dashboard extends Component
         $todayFiltered = $allSessions->filter(function (WorkoutSession $session) use ($today) {
             $scheduled = $session->scheduled_date?->toDateString() === $today;
             $actual = $session->actual_date?->toDateString() === $today;
+
             return $scheduled || $actual;
         })->values();
 
@@ -118,6 +137,7 @@ class Dashboard extends Component
                 if ($s->status === WorkoutSession::STATUS_COMPLETED) {
                     return 100;
                 }
+
                 return (int) $s->progress_percent;
             });
             $this->dailyWorkoutProgress = (int) round($avgProgress ?? 0);
@@ -185,7 +205,7 @@ class Dashboard extends Component
             $notifications[] = [
                 'level' => 'warning',
                 'title' => 'Jadwal Terlewat',
-                'detail' => "{$missed->name} seharusnya dilakukan pada " . WorkoutSession::formatIndonesianDate($missed->scheduled_date) . '.',
+                'detail' => "{$missed->name} seharusnya dilakukan pada ".WorkoutSession::formatIndonesianDate($missed->scheduled_date).'.',
             ];
         }
 
@@ -198,6 +218,43 @@ class Dashboard extends Component
         }
 
         $this->scheduleNotifications = array_slice($notifications, 0, 3);
+
+        // Ringkasan Program Latihan Aktif (tanpa mengubah layout utama dashboard)
+        $activeProgram = WorkoutProgram::where('user_id', $userId)
+            ->where('status', WorkoutProgram::STATUS_ACTIVE)
+            ->latest()
+            ->first();
+
+        if ($activeProgram) {
+            $programSessions = $allSessions->where('workout_program_id', $activeProgram->id);
+            $progTotal = $programSessions->count();
+            $progCompleted = $programSessions->where('status', WorkoutSession::STATUS_COMPLETED)->count();
+            $progPending = $programSessions->whereIn('status', [
+                WorkoutSession::STATUS_UPCOMING,
+                WorkoutSession::STATUS_IN_PROGRESS,
+            ])->count();
+            $progPercent = $progTotal > 0 ? (int) round(($progCompleted / $progTotal) * 100) : 0;
+
+            $progNext = $programSessions
+                ->filter(fn (WorkoutSession $s) => in_array($s->status, [WorkoutSession::STATUS_UPCOMING, WorkoutSession::STATUS_IN_PROGRESS], true)
+                    && $s->scheduled_date
+                    && $s->scheduled_date->toDateString() >= $today)
+                ->first();
+
+            $this->activeProgramSummary = [
+                'id' => $activeProgram->id,
+                'name' => $activeProgram->name,
+                'method_label' => $activeProgram->methodLabel(),
+                'current_week' => $activeProgram->currentWeekNumber(),
+                'total_weeks' => $activeProgram->total_weeks,
+                'progress_percent' => $progPercent,
+                'completed_count' => $progCompleted,
+                'pending_count' => $progPending,
+                'total_count' => $progTotal,
+                'next_session_name' => $progNext?->name,
+                'next_session_date' => $progNext ? WorkoutSession::formatIndonesianDate($progNext->scheduled_date) : null,
+            ];
+        }
     }
 
     public function render()

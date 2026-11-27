@@ -2,13 +2,14 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Exercise;
+use Illuminate\Console\Command;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class TranslateExercises extends Command
 {
     protected $signature = 'exercises:translate';
+
     protected $description = 'Translate all English exercise instructions to Indonesian';
 
     public function handle()
@@ -20,8 +21,8 @@ class TranslateExercises extends Command
             ->orWhere('instructions', 'like', '% to %')
             ->get();
 
-        $this->info('Found ' . $exercises->count() . ' exercises to translate.');
-        
+        $this->info('Found '.$exercises->count().' exercises to translate.');
+
         $tr = new GoogleTranslate('id');
         $tr->setSource('en');
 
@@ -32,17 +33,17 @@ class TranslateExercises extends Command
             try {
                 $rawInstructions = $ex->instructions;
                 $translated = $tr->translate($rawInstructions);
-                
-                if (!empty($translated)) {
+
+                if (! empty($translated)) {
                     $ex->instructions = $translated;
                     $ex->save();
                 }
             } catch (\Exception $e) {
                 sleep(2);
             }
-            
+
             $bar->advance();
-            usleep(200000); 
+            usleep(200000);
         }
 
         $bar->finish();

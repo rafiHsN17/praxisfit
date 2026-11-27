@@ -14,41 +14,68 @@ class ProteinCalculator extends Component
 {
     // Form Log Konsumsi Aktual
     public string $tanggal = '';
+
     public string $waktu_makan = 'Makan Siang';
+
     public string $sumber_makanan = 'Dada Ayam Fillet / Boneless';
+
     public float $berat = 100;
+
     public bool $isCustomFood = false;
+
     public string $custom_food_name = '';
+
     public float $custom_protein = 0;
+
     public float $custom_kalori = 0;
+
     public float $custom_lemak = 0;
+
     public float $custom_karbo = 0;
 
     // Target Harian (Estimasi Kalkulator)
     public float $targetProtein = 150.0;
+
     public float $targetCalories = 2100.0;
+
     public float $targetFat = 58.0;
+
     public float $targetCarbs = 244.0;
+
     public ?float $bmrValue = null;
+
     public ?float $tdeeValue = null;
 
     // Data Biometrik Kalkulator Mifflin-St Jeor
     public $user_weight;
+
     public $user_height;
+
     public $user_age = 24;
+
     public string $user_gender = 'M';
+
     public string $activity_level = 'moderate';
+
     public string $fitness_goal = 'maintenance';
+
     public bool $is_confirmed = false;
+
     public bool $showCalculatorModal = false;
 
     // State Edit, Grafik & Filter Riwayat
     public $editingLogId = null;
+
     public string $chartNutrient = 'protein'; // protein | kalori | lemak | karbohidrat
+
     public int $chartRange = 7; // 7 | 30
+
     public string $chartType = 'line'; // line | bar
+
     public string $historyRange = '30'; // today | 7 | 30 | all | custom
+
     public string $historyFromDate = '';
+
     public string $historyToDate = '';
 
     public $foodSources = [];
@@ -77,7 +104,7 @@ class ProteinCalculator extends Component
         $this->historyFromDate = $now->copy()->subDays(29)->toDateString();
 
         $this->foodSources = ProteinSource::orderBy('name')->get();
-        if ($this->foodSources->isNotEmpty() && !$this->foodSources->where('name', $this->sumber_makanan)->first()) {
+        if ($this->foodSources->isNotEmpty() && ! $this->foodSources->where('name', $this->sumber_makanan)->first()) {
             $this->sumber_makanan = $this->foodSources->first()->name;
         }
 
@@ -120,7 +147,7 @@ class ProteinCalculator extends Component
 
     private function computeBmrAndTdeeOnly(): void
     {
-        if (!$this->user_weight || !$this->user_height || !$this->user_age) {
+        if (! $this->user_weight || ! $this->user_height || ! $this->user_age) {
             return;
         }
         $genderOffset = $this->user_gender === 'M' ? 5 : -161;
@@ -136,7 +163,7 @@ class ProteinCalculator extends Component
             'user_height' => 'required|numeric|min:100|max:250',
             'user_age' => 'required|integer|min:13|max:100',
             'user_gender' => 'required|in:M,F',
-            'activity_level' => 'required|in:' . implode(',', array_keys(self::ACTIVITY_FACTORS)),
+            'activity_level' => 'required|in:'.implode(',', array_keys(self::ACTIVITY_FACTORS)),
             'fitness_goal' => 'required|in:cutting,maintenance,bulking',
         ], [
             'user_weight.required' => 'Berat badan wajib diisi.',
@@ -235,7 +262,7 @@ class ProteinCalculator extends Component
         }
 
         $source = $this->foodSources->where('name', $this->sumber_makanan)->first();
-        if (!$source) {
+        if (! $source) {
             return ['protein' => 0.0, 'kalori' => 0.0, 'lemak' => 0.0, 'karbohidrat' => 0.0];
         }
 
@@ -258,7 +285,7 @@ class ProteinCalculator extends Component
     #[Computed]
     public function dailyLogs()
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return collect();
         }
 
@@ -311,7 +338,7 @@ class ProteinCalculator extends Component
             $result[$key]['today'] = $todayTotals[$key];
         }
 
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return $result;
         }
 
@@ -411,7 +438,7 @@ class ProteinCalculator extends Component
     #[Computed]
     public function historyLogs()
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return collect();
         }
 
@@ -442,8 +469,9 @@ class ProteinCalculator extends Component
 
     public function saveLog(): void
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             session()->flash('error_auth', 'Silakan masuk ke akun Anda terlebih dahulu untuk menyimpan catatan nutrisi pribadi.');
+
             return;
         }
 
@@ -510,7 +538,7 @@ class ProteinCalculator extends Component
 
     public function editLog(int $id): void
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return;
         }
 
@@ -518,7 +546,7 @@ class ProteinCalculator extends Component
             ->where('user_id', auth()->id())
             ->first();
 
-        if (!$log) {
+        if (! $log) {
             return;
         }
 
@@ -557,7 +585,7 @@ class ProteinCalculator extends Component
 
     public function deleteLog(int $id): void
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return;
         }
 

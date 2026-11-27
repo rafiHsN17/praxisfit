@@ -2,7 +2,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-[#202124] dark:text-[#F5F5F5] tracking-tight">
-                Admin <span class="text-[#E54855]">Dashboard</span>
+                Dasbor <span class="text-[#E54855]">Admin</span>
             </h1>
             <p class="mt-1 text-sm text-[#777777] dark:text-[#AAA0A2]">
                 Ringkasan data katalog gerakan, nutrisi TKPI, tujuan latihan, FAQ, dan pesan bantuan pengguna.

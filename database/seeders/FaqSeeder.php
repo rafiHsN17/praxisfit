@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Faq;
+use Illuminate\Database\Seeder;
 
 class FaqSeeder extends Seeder
 {
@@ -374,6 +374,6 @@ class FaqSeeder extends Seeder
             Faq::create($faq);
         }
 
-        $this->command?->info('✅ Sukses memuat ' . count($faqs) . ' data FAQ PraxisFit (8 Judul x 5 Pertanyaan) dengan sumber kredibel Indonesia!');
+        $this->command?->info('✅ Sukses memuat '.count($faqs).' data FAQ PraxisFit (8 Judul x 5 Pertanyaan) dengan sumber kredibel Indonesia!');
     }
 }

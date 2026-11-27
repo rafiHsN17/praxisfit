@@ -27,7 +27,7 @@ class Faq extends Model
      */
     public static function categoryLabel(?string $kategori): string
     {
-        if (!$kategori) {
+        if (! $kategori) {
             return 'Umum';
         }
 

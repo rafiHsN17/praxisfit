@@ -1,12 +1,19 @@
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-20">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-16 space-y-6">
+    <div class="bg-white dark:bg-[#1A1012] rounded-2xl border border-[#E9E9EC] dark:border-[#342427] p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#E54855]/10 text-[#E54855] mb-1.5">
+                Pengaturan Akun &amp; Fisik
+            </span>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-[#202124] dark:text-[#F5F5F5] tracking-tight">
                 Profil &amp; <span class="text-[#E54855]">Tujuan Latihan</span>
             </h1>
             <p class="text-sm text-[#777777] dark:text-[#AAA0A2] mt-1">
                 Lengkapi data fisik untuk personalisasi jadwal rutinitas mingguan PraxisFit.
             </p>
+        </div>
+        <div class="shrink-0 flex items-center gap-2 text-xs font-bold px-3.5 py-2 rounded-xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] text-[#202124] dark:text-[#F5F5F5]">
+            <span class="w-2 h-2 rounded-full bg-[#E54855]"></span>
+            <span>{{ Auth::user()->name }}</span>
         </div>
     </div>
 
@@ -86,20 +93,56 @@
             </form>
         </div>
 
-        <!-- Info / Tips -->
+        <!-- Info / Tips (Konsisten Light Merah/Putih & Dark Merah/Hitam) -->
         <div class="space-y-5">
-            <div class="bg-[#1A1012] border border-[#342427] rounded-2xl p-6 text-[#F5F5F5] shadow-md">
-                <h3 class="text-lg font-extrabold flex items-center gap-2 mb-3">
-                    <svg class="w-5 h-5 text-[#E54855]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                    Jadwal Cerdas PraxisFit
-                </h3>
-                <p class="text-[#AAA0A2] text-sm leading-relaxed mb-5">
+            <div class="bg-white dark:bg-[#1A1012] border border-[#E9E9EC] dark:border-[#342427] rounded-2xl p-6 shadow-xs space-y-4">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-9 h-9 rounded-xl bg-[#E54855]/10 text-[#E54855] flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </span>
+                    <h3 class="text-lg font-extrabold text-[#202124] dark:text-[#F5F5F5]">
+                        Jadwal Cerdas PraxisFit
+                    </h3>
+                </div>
+                <p class="text-[#777777] dark:text-[#AAA0A2] text-sm leading-relaxed">
                     Tujuan latihan di PraxisFit dirancang terstruktur agar kelompok otot memiliki jeda pemulihan (<em>recovery</em>) optimal, baik untuk latihan calisthenics di rumah maupun latihan beban di gym.
                 </p>
-                <a href="{{ route('workout.planner') }}" wire:navigate class="inline-flex items-center gap-2 bg-[#E54855] hover:bg-[#C93646] text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-colors">
-                    Lihat Workout Planner Saya &rarr;
-                </a>
+                <div class="flex flex-wrap gap-2.5 pt-1">
+                    <a href="{{ route('workout.planner') }}" wire:navigate class="inline-flex items-center gap-2 bg-[#E54855] hover:bg-[#C93646] text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-xs transition-colors">
+                        Lihat Workout Planner Saya &rarr;
+                    </a>
+                    <a href="{{ route('program.generator') }}" wire:navigate class="inline-flex items-center gap-2 bg-[#F7F7F8] dark:bg-[#251518] hover:border-[#E54855] border border-[#E9E9EC] dark:border-[#342427] text-[#202124] dark:text-[#F5F5F5] text-xs font-bold py-2.5 px-4 rounded-xl transition-colors">
+                        Buat Program Otomatis
+                    </a>
+                </div>
             </div>
+
+            @if($height && $weight && $height > 0)
+                @php
+                    $heightM = ((float) $height) / 100;
+                    $bmi = $heightM > 0 ? round(((float) $weight) / ($heightM * $heightM), 1) : 0;
+                    $bmiCategory = match (true) {
+                        $bmi < 18.5 => 'Berat Badan Kurang',
+                        $bmi < 25.0 => 'Normal / Ideal',
+                        $bmi < 30.0 => 'Kelebihan Berat Badan',
+                        default => 'Obesitas',
+                    };
+                @endphp
+                <div class="bg-white dark:bg-[#1A1012] border border-[#E9E9EC] dark:border-[#342427] rounded-2xl p-6 shadow-xs space-y-3">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-[#777777] dark:text-[#AAA0A2]">Indeks Massa Tubuh (BMI)</span>
+                    <div class="flex items-baseline justify-between gap-3">
+                        <div class="text-3xl font-extrabold text-[#202124] dark:text-[#F5F5F5]">
+                            {{ number_format($bmi, 1) }}
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-[#E54855]/10 text-[#E54855] text-xs font-bold">
+                            {{ $bmiCategory }}
+                        </span>
+                    </div>
+                    <p class="text-xs text-[#777777] dark:text-[#AAA0A2]">
+                        Dihitung dari tinggi {{ $height }} cm dan berat {{ $weight }} kg. Gunakan <a href="{{ route('calculator') }}" wire:navigate class="font-bold text-[#E54855] hover:underline">Kalkulator Nutrisi</a> untuk target kalori &amp; protein harian.
+                    </p>
+                </div>
+            @endif
         </div>
     </div>
 </div>

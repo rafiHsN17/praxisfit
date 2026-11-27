@@ -15,6 +15,7 @@ use Livewire\Component;
 class ForgotPassword extends Component
 {
     public string $email = '';
+
     public ?string $statusMessage = null;
 
     public function sendResetLink(): void
@@ -42,7 +43,7 @@ class ForgotPassword extends Component
             try {
                 Password::broker()->sendResetLink(['email' => $email]);
             } catch (\Throwable $e) {
-                Log::info('Tautan reset kata sandi untuk ' . $email . ' tercatat di log: ' . route('password.reset', ['token' => $token, 'email' => $email]));
+                Log::info('Tautan reset kata sandi untuk '.$email.' tercatat di log: '.route('password.reset', ['token' => $token, 'email' => $email]));
             }
         }
 
@@ -55,4 +56,3 @@ class ForgotPassword extends Component
         return view('livewire.auth.forgot-password')->layout('components.layouts.auth');
     }
 }
-

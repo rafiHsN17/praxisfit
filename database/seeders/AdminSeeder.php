@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Admin;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class AdminSeeder extends Seeder
 {
@@ -26,15 +26,6 @@ class AdminSeeder extends Seeder
         );
 
         $admin->assignRole($role);
-
-        User::updateOrCreate(
-            ['name' => 'admin-praxisfit-1'],
-            [
-                'email' => 'admin@praxisfit.com',
-                'password' => Hash::make('tinju-kangguru-123'),
-                'email_verified_at' => now(),
-            ]
-        );
 
         // Pastikan seluruh akun user yang sudah pernah didaftarkan sebelumnya langsung aktif tanpa tertahan OTP
         User::whereNull('email_verified_at')->orWhereNotNull('otp_code')->update([

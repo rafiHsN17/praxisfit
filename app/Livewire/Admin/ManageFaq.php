@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
 use App\Models\Faq;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 
 #[Layout('layouts.admin')]
 #[Title('Kelola FAQ - Admin PraxisFit')]
@@ -13,21 +13,31 @@ class ManageFaq extends Component
 {
     // Filter & Pencarian Tabel
     public string $search = '';
+
     public string $filterKategori = '';
 
     // State Form Tambah / Edit FAQ
     public ?int $faq_id = null;
+
     public string $pertanyaan = '';
+
     public string $jawaban_singkat = '';
+
     public string $contoh = '';
+
     public string $sumber_nama = '';
+
     public string $sumber_url = '';
+
     public string $kategori = 'panduan_praxisfit';
+
     public string $kategori_baru = '';
+
     public bool $isEditMode = false;
 
     // State Form Ganti Nama Judul Kategori Sekaligus
     public string $renameTargetKey = '';
+
     public string $renameNewTitle = '';
 
     protected function rules(): array
@@ -66,7 +76,7 @@ class ManageFaq extends Component
             ->pluck('kategori');
 
         foreach ($dbCategories as $cat) {
-            if ($cat && !isset($categories[$cat])) {
+            if ($cat && ! isset($categories[$cat])) {
                 $categories[$cat] = Faq::categoryLabel($cat);
             }
         }
@@ -199,12 +209,12 @@ class ManageFaq extends Component
         }
 
         if (trim($this->search) !== '') {
-            $keyword = '%' . trim($this->search) . '%';
+            $keyword = '%'.trim($this->search).'%';
             $query->where(function ($q) use ($keyword) {
                 $q->where('pertanyaan', 'like', $keyword)
-                  ->orWhere('jawaban_singkat', 'like', $keyword)
-                  ->orWhere('contoh', 'like', $keyword)
-                  ->orWhere('sumber_nama', 'like', $keyword);
+                    ->orWhere('jawaban_singkat', 'like', $keyword)
+                    ->orWhere('contoh', 'like', $keyword)
+                    ->orWhere('sumber_nama', 'like', $keyword);
             });
         }
 

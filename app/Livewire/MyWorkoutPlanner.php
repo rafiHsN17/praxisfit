@@ -3,17 +3,19 @@
 namespace App\Livewire;
 
 use App\Models\Exercise;
+use App\Models\MuscleRecoveryLog;
 use App\Models\WorkoutRoutine;
 use App\Models\WorkoutSession;
 use App\Models\WorkoutSessionItem;
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Title('Workout Planner & Riwayat - PraxisFit')]
+#[Title('Jadwal & Riwayat Latihan - PraxisFit')]
 class MyWorkoutPlanner extends Component
 {
     use WithPagination;
@@ -25,53 +27,85 @@ class MyWorkoutPlanner extends Component
 
     // Filter daftar sesi (Plan List)
     public string $statusFilter = 'all'; // 'all' | 'unfinished' | 'finished'
+
     public string $search = '';
+
     public ?string $selectedDate = null;
 
     // Kalender Bulan & Tampilan Strip Mingguan
     public int $calendarYear;
+
     public int $calendarMonth;
+
     public bool $showWeekStrip = false;
 
     // Filter Riwayat
     public string $historyRange = '30d'; // 'today' | '7d' | '30d' | 'all'
+
     public ?int $historyDetailSessionId = null;
 
     // Modal Buat / Edit Sesi Jadwal
     public bool $showSessionModal = false;
+
     public ?int $editingSessionId = null;
+
     public string $sessionName = '';
+
     public string $sessionCategory = 'Latihan Beban';
+
     public string $sessionDate = '';
+
     public string $sessionTime = '07:00';
+
     public string $sessionNotes = '';
+
     public array $sessionExercises = [];
+
     public ?int $addExerciseId = null;
+
     public int $addExerciseSets = 3;
+
     public string $addExerciseReps = '10-12';
+
     public string $pickerSearch = '';
 
     // Modal Peringatan Ketidaksesuaian Tanggal
     public ?int $mismatchSessionId = null;
+
     public string $mismatchScheduledFormatted = '';
+
     public string $mismatchTodayFormatted = '';
+
     public bool $mismatchIsFuture = false;
 
     // Modal Pelaksanaan Latihan Aktif (1 Layar Full Gerakan + Timer + Rest)
     public ?int $activeSessionId = null;
+
     public int $activeExerciseIndex = 0;
-    public int $restDurationSeconds = 45;
+
+    public int $restDurationSeconds = 60;
+
+    public bool $useCustomRestDuration = false;
+
     public ?int $quickAddExerciseId = null;
+
     public int $quickAddSets = 3;
+
     public string $quickAddReps = '10-12';
 
     // CRUD Rutinitas Mingguan (WorkoutRoutine Legacy / Template)
     public bool $showRoutineModal = false;
+
     public ?int $routine_id = null;
+
     public ?int $exercise_id = null;
+
     public string $day_of_week = 'Senin';
+
     public int $sets = 3;
+
     public string $reps = '12-15';
+
     public string $notes = '';
 
     public function mount(): void
@@ -164,8 +198,9 @@ class MyWorkoutPlanner extends Component
 
     public function openCreateSessionModal(?string $date = null): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             session()->flash('error', 'Silakan masuk terlebih dahulu untuk membuat jadwal latihan.');
+
             return;
         }
 
@@ -176,12 +211,12 @@ class MyWorkoutPlanner extends Component
 
     public function editSession(int $sessionId): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
         $session = WorkoutSession::with('items.exercise')->where('user_id', Auth::id())->find($sessionId);
-        if (!$session) {
+        if (! $session) {
             return;
         }
 
@@ -229,12 +264,12 @@ class MyWorkoutPlanner extends Component
 
     public function addExerciseToDraft(): void
     {
-        if (!$this->addExerciseId) {
+        if (! $this->addExerciseId) {
             return;
         }
 
         $exercise = Exercise::find($this->addExerciseId);
-        if (!$exercise) {
+        if (! $exercise) {
             return;
         }
 
@@ -258,8 +293,9 @@ class MyWorkoutPlanner extends Component
 
     public function saveSession(): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             session()->flash('error', 'Silakan masuk terlebih dahulu untuk menyimpan jadwal.');
+
             return;
         }
 
@@ -276,9 +312,9 @@ class MyWorkoutPlanner extends Component
 
         $session = $this->editingSessionId
             ? WorkoutSession::where('user_id', Auth::id())->find($this->editingSessionId)
-            : new WorkoutSession();
+            : new WorkoutSession;
 
-        if ($this->editingSessionId && !$session) {
+        if ($this->editingSessionId && ! $session) {
             return;
         }
 
@@ -289,7 +325,7 @@ class MyWorkoutPlanner extends Component
         $session->scheduled_time = $this->sessionTime ?: null;
         $session->notes = trim($this->sessionNotes) !== '' ? trim($this->sessionNotes) : null;
 
-        if (!$this->editingSessionId) {
+        if (! $this->editingSessionId) {
             $session->status = WorkoutSession::STATUS_UPCOMING;
             $session->progress_percent = 0;
         }
@@ -307,6 +343,7 @@ class MyWorkoutPlanner extends Component
                 'target_sets' => (int) ($item['target_sets'] ?? 3),
                 'completed_sets' => 0,
                 'target_reps' => $item['target_reps'] ?? '10-12',
+                'rest_seconds' => max(0, (int) ($item['rest_seconds'] ?? 60)),
                 'is_completed' => false,
                 'sort_order' => $idx + 1,
             ]);
@@ -322,7 +359,7 @@ class MyWorkoutPlanner extends Component
 
     public function deleteSession(int $sessionId): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
@@ -335,12 +372,12 @@ class MyWorkoutPlanner extends Component
 
     public function forceFinishSession(int $sessionId, ?int $elapsedSeconds = null): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
         $session = WorkoutSession::with('items')->where('user_id', Auth::id())->find($sessionId);
-        if (!$session) {
+        if (! $session) {
             return;
         }
 
@@ -367,6 +404,12 @@ class MyWorkoutPlanner extends Component
             'progress_percent' => 100,
         ]);
 
+        MuscleRecoveryLog::where('workout_session_id', $session->id)
+            ->update([
+                'completion_status' => 'completed',
+                'trained_date' => $now->toDateString(),
+            ]);
+
         if ($this->activeSessionId === $sessionId) {
             $this->activeSessionId = null;
             $this->activeExerciseIndex = 0;
@@ -379,18 +422,20 @@ class MyWorkoutPlanner extends Component
 
     public function attemptStartSession(int $sessionId): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             session()->flash('error', 'Silakan masuk untuk memulai sesi latihan.');
+
             return;
         }
 
         $session = WorkoutSession::with('items')->where('user_id', Auth::id())->find($sessionId);
-        if (!$session) {
+        if (! $session) {
             return;
         }
 
         if ($session->status === WorkoutSession::STATUS_IN_PROGRESS) {
             $this->openActiveSession($session->id);
+
             return;
         }
 
@@ -402,6 +447,7 @@ class MyWorkoutPlanner extends Component
             $this->mismatchScheduledFormatted = WorkoutSession::formatIndonesianDate($scheduled);
             $this->mismatchTodayFormatted = WorkoutSession::formatIndonesianDate($today);
             $this->mismatchIsFuture = $scheduled->gt($today);
+
             return;
         }
 
@@ -418,8 +464,9 @@ class MyWorkoutPlanner extends Component
 
     public function confirmMismatchStart(): void
     {
-        if (!Auth::check() || !$this->mismatchSessionId) {
+        if (! Auth::check() || ! $this->mismatchSessionId) {
             $this->cancelMismatchStart();
+
             return;
         }
 
@@ -443,23 +490,27 @@ class MyWorkoutPlanner extends Component
         ]);
 
         $this->activeSessionId = $session->id;
-        $firstIncompleteIndex = $session->items->values()->search(fn ($item) => !$item->is_completed);
+        $firstIncompleteIndex = $session->items->values()->search(fn ($item) => ! $item->is_completed);
         $this->activeExerciseIndex = $firstIncompleteIndex !== false ? (int) $firstIncompleteIndex : 0;
+        $this->useCustomRestDuration = false;
+        $this->syncRestDurationForActiveItem($session);
 
         session()->flash('success', "Sesi \"{$session->name}\" dimulai. Semangat berlatih!");
     }
 
     public function openActiveSession(int $sessionId): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
         $session = WorkoutSession::with('items')->where('user_id', Auth::id())->find($sessionId);
         if ($session) {
             $this->activeSessionId = $session->id;
-            $firstIncompleteIndex = $session->items->values()->search(fn ($item) => !$item->is_completed);
+            $firstIncompleteIndex = $session->items->values()->search(fn ($item) => ! $item->is_completed);
             $this->activeExerciseIndex = $firstIncompleteIndex !== false ? (int) $firstIncompleteIndex : 0;
+            $this->useCustomRestDuration = false;
+            $this->syncRestDurationForActiveItem($session);
         }
     }
 
@@ -468,18 +519,54 @@ class MyWorkoutPlanner extends Component
         $this->activeSessionId = null;
     }
 
+    public function setCustomRestDuration(int $seconds): void
+    {
+        $this->restDurationSeconds = max(0, min(600, $seconds));
+        $this->useCustomRestDuration = true;
+    }
+
+    public function resetRestToRecommended(): void
+    {
+        $this->useCustomRestDuration = false;
+        $this->syncRestDurationForActiveItem();
+    }
+
+    private function syncRestDurationForActiveItem(?WorkoutSession $session = null): void
+    {
+        if ($this->useCustomRestDuration) {
+            return;
+        }
+
+        $activeSession = $session;
+        if (! $activeSession && $this->activeSessionId && Auth::check()) {
+            $activeSession = WorkoutSession::with('items')->where('user_id', Auth::id())->find($this->activeSessionId);
+        }
+
+        if (! $activeSession) {
+            return;
+        }
+
+        $items = $activeSession->items->values();
+        $currentItem = $items->get(min(max(0, $this->activeExerciseIndex), max(0, $items->count() - 1)));
+        if ($currentItem) {
+            $recommended = (int) ($currentItem->rest_seconds ?? 60);
+            $this->restDurationSeconds = $recommended > 0 ? $recommended : 60;
+        }
+    }
+
     public function goToExerciseStep(int $index): void
     {
         $this->activeExerciseIndex = max(0, $index);
+        $this->syncRestDurationForActiveItem();
     }
 
     public function completeItemAndAdvance(int $itemId, int $nextIndex): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
-        $item = WorkoutSessionItem::with('session')->find($itemId);
+        $item = WorkoutSessionItem::with('session.items')->find($itemId);
         if ($item && $item->session && $item->session->user_id === Auth::id()) {
             $item->update([
                 'is_completed' => true,
@@ -489,21 +576,44 @@ class MyWorkoutPlanner extends Component
         }
 
         $this->activeExerciseIndex = max(0, $nextIndex);
+        $this->syncRestDurationForActiveItem($item?->session);
     }
 
-    public function incrementItemSet(int $itemId): void
+    public function completeSetStep(int $itemId): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
         $item = WorkoutSessionItem::with('session')->find($itemId);
-        if (!$item || !$item->session || $item->session->user_id !== Auth::id()) {
+        if (! $item || ! $item->session || $item->session->user_id !== Auth::id()) {
+            return;
+        }
+
+        $targetSets = max(1, (int) $item->target_sets);
+        $nextSets = min($targetSets, $item->completed_sets + 1);
+        $isDone = $nextSets >= $targetSets;
+
+        $item->update([
+            'completed_sets' => $nextSets,
+            'is_completed' => $isDone,
+        ]);
+        $item->session->recalculateProgress();
+    }
+
+    public function incrementItemSet(int $itemId): void
+    {
+        if (! Auth::check()) {
+            return;
+        }
+
+        $item = WorkoutSessionItem::with('session')->find($itemId);
+        if (! $item || ! $item->session || $item->session->user_id !== Auth::id()) {
             return;
         }
 
         $nextSets = min(50, $item->completed_sets + 1);
-        $isDone = $nextSets >= $item->target_sets;
+        $isDone = $nextSets >= max(1, (int) $item->target_sets);
         $item->update([
             'completed_sets' => $nextSets,
             'is_completed' => $isDone ? true : $item->is_completed,
@@ -513,33 +623,36 @@ class MyWorkoutPlanner extends Component
 
     public function decrementItemSet(int $itemId): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
         $item = WorkoutSessionItem::with('session')->find($itemId);
-        if (!$item || !$item->session || $item->session->user_id !== Auth::id()) {
+        if (! $item || ! $item->session || $item->session->user_id !== Auth::id()) {
             return;
         }
 
         $nextSets = max(0, $item->completed_sets - 1);
+        $isDone = $nextSets >= max(1, (int) $item->target_sets);
         $item->update([
             'completed_sets' => $nextSets,
+            'is_completed' => $isDone,
         ]);
+        $item->session->recalculateProgress();
     }
 
     public function toggleItemCompleted(int $itemId): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
         $item = WorkoutSessionItem::with('session')->find($itemId);
-        if (!$item || !$item->session || $item->session->user_id !== Auth::id()) {
+        if (! $item || ! $item->session || $item->session->user_id !== Auth::id()) {
             return;
         }
 
-        $nextState = !$item->is_completed;
+        $nextState = ! $item->is_completed;
         $item->update([
             'is_completed' => $nextState,
             'completed_sets' => $nextState ? max($item->completed_sets, $item->target_sets) : $item->completed_sets,
@@ -550,12 +663,12 @@ class MyWorkoutPlanner extends Component
 
     public function updateItemTracking(int $itemId, int $completedSets, ?float $weightKg = null): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
         $item = WorkoutSessionItem::with('session')->find($itemId);
-        if (!$item || !$item->session || $item->session->user_id !== Auth::id()) {
+        if (! $item || ! $item->session || $item->session->user_id !== Auth::id()) {
             return;
         }
 
@@ -567,13 +680,13 @@ class MyWorkoutPlanner extends Component
 
     public function addItemToActiveSession(): void
     {
-        if (!Auth::check() || !$this->activeSessionId || !$this->quickAddExerciseId) {
+        if (! Auth::check() || ! $this->activeSessionId || ! $this->quickAddExerciseId) {
             return;
         }
 
         $session = WorkoutSession::where('user_id', Auth::id())->find($this->activeSessionId);
         $exercise = Exercise::find($this->quickAddExerciseId);
-        if (!$session || !$exercise) {
+        if (! $session || ! $exercise) {
             return;
         }
 
@@ -586,6 +699,7 @@ class MyWorkoutPlanner extends Component
             'target_sets' => max(1, $this->quickAddSets),
             'completed_sets' => 0,
             'target_reps' => trim($this->quickAddReps) ?: '10-12',
+            'rest_seconds' => 60,
             'is_completed' => false,
             'sort_order' => $nextOrder,
         ]);
@@ -595,7 +709,7 @@ class MyWorkoutPlanner extends Component
 
     public function finishActiveSession(?int $elapsedSeconds = null): void
     {
-        if (!Auth::check() || !$this->activeSessionId) {
+        if (! Auth::check() || ! $this->activeSessionId) {
             return;
         }
 
@@ -606,8 +720,9 @@ class MyWorkoutPlanner extends Component
 
     public function generateFromWeeklyRoutines(): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             session()->flash('error', 'Silakan masuk terlebih dahulu.');
+
             return;
         }
 
@@ -618,6 +733,7 @@ class MyWorkoutPlanner extends Component
 
         if ($routines->isEmpty()) {
             session()->flash('error', 'Rutinitas mingguan masih kosong. Tambahkan gerakan di tab Rutinitas Mingguan terlebih dahulu.');
+
             return;
         }
 
@@ -635,7 +751,7 @@ class MyWorkoutPlanner extends Component
         $created = 0;
 
         foreach ($dayOffsets as $dayName => $offset) {
-            if (!isset($routines[$dayName]) || $routines[$dayName]->isEmpty()) {
+            if (! isset($routines[$dayName]) || $routines[$dayName]->isEmpty()) {
                 continue;
             }
 
@@ -671,6 +787,7 @@ class MyWorkoutPlanner extends Component
                     'target_sets' => $routine->sets,
                     'completed_sets' => 0,
                     'target_reps' => $routine->reps,
+                    'rest_seconds' => 60,
                     'notes' => $routine->notes,
                     'sort_order' => $idx + 1,
                 ]);
@@ -687,7 +804,7 @@ class MyWorkoutPlanner extends Component
 
     public function openHistoryDetail(int $sessionId): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
         $session = WorkoutSession::where('user_id', Auth::id())->find($sessionId);
@@ -705,8 +822,9 @@ class MyWorkoutPlanner extends Component
 
     public function openRoutineModal(?int $id = null, string $day = 'Senin'): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             session()->flash('error', 'Silakan masuk terlebih dahulu untuk mengatur rutinitas.');
+
             return;
         }
 
@@ -720,6 +838,7 @@ class MyWorkoutPlanner extends Component
                 $this->reps = $routine->reps;
                 $this->notes = $routine->notes ?? '';
                 $this->showRoutineModal = true;
+
                 return;
             }
         }
@@ -735,8 +854,9 @@ class MyWorkoutPlanner extends Component
 
     public function save(): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             session()->flash('error', 'Silakan masuk terlebih dahulu.');
+
             return;
         }
 
@@ -753,7 +873,7 @@ class MyWorkoutPlanner extends Component
 
         if ($this->routine_id) {
             $routine = WorkoutRoutine::where('user_id', Auth::id())->find($this->routine_id);
-            if (!$routine) {
+            if (! $routine) {
                 return;
             }
             $routine->update([
@@ -782,7 +902,7 @@ class MyWorkoutPlanner extends Component
 
     public function delete(int $id): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
@@ -848,8 +968,8 @@ class MyWorkoutPlanner extends Component
             'icon',
         ]);
 
-        if (!$userId) {
-            $emptySessions = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 6);
+        if (! $userId) {
+            $emptySessions = new LengthAwarePaginator([], 0, 6);
 
             return view('livewire.my-workout-planner', [
                 'isAuthenticated' => false,
@@ -890,11 +1010,11 @@ class MyWorkoutPlanner extends Component
         }
 
         if (trim($this->search) !== '') {
-            $term = '%' . trim($this->search) . '%';
+            $term = '%'.trim($this->search).'%';
             $planQuery->where(function ($q) use ($term) {
                 $q->where('name', 'like', $term)
-                  ->orWhere('category', 'like', $term)
-                  ->orWhere('notes', 'like', $term);
+                    ->orWhere('category', 'like', $term)
+                    ->orWhere('notes', 'like', $term);
             });
         }
 
@@ -918,26 +1038,26 @@ class MyWorkoutPlanner extends Component
             ->where('user_id', $userId)
             ->where(function ($q) use ($todayStr) {
                 $q->whereIn('status', [WorkoutSession::STATUS_COMPLETED, WorkoutSession::STATUS_MISSED])
-                  ->orWhereNotNull('actual_date')
-                  ->orWhereDate('scheduled_date', '<', $todayStr);
+                    ->orWhereNotNull('actual_date')
+                    ->orWhereDate('scheduled_date', '<', $todayStr);
             });
 
         if ($this->historyRange === 'today') {
             $historyQuery->where(function ($q) use ($todayStr) {
                 $q->whereDate('actual_date', $todayStr)
-                  ->orWhereDate('scheduled_date', $todayStr);
+                    ->orWhereDate('scheduled_date', $todayStr);
             });
         } elseif ($this->historyRange === '7d') {
             $start7 = $today->copy()->subDays(6)->toDateString();
             $historyQuery->where(function ($q) use ($start7) {
                 $q->whereDate('actual_date', '>=', $start7)
-                  ->orWhereDate('scheduled_date', '>=', $start7);
+                    ->orWhereDate('scheduled_date', '>=', $start7);
             });
         } elseif ($this->historyRange === '30d') {
             $start30 = $today->copy()->subDays(29)->toDateString();
             $historyQuery->where(function ($q) use ($start30) {
                 $q->whereDate('actual_date', '>=', $start30)
-                  ->orWhereDate('scheduled_date', '>=', $start30);
+                    ->orWhereDate('scheduled_date', '>=', $start30);
             });
         }
 

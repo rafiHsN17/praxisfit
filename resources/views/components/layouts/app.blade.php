@@ -52,7 +52,7 @@
     </style>
     @livewireStyles
 </head>
-<body class="bg-[#F7F7F8] dark:bg-[#100809] text-[#202124] dark:text-[#F5F5F5] font-sans min-h-screen overflow-x-hidden transition-colors duration-200 antialiased selection:bg-[#E54855] selection:text-white flex flex-col">
+<body class="bg-[#F7F7F8] dark:bg-[#100809] text-[#202124] dark:text-[#F5F5F5] font-sans min-h-screen overflow-x-clip transition-colors duration-200 antialiased selection:bg-[#E54855] selection:text-white flex flex-col">
 
     <!-- MODERN ATHLETIC NAVBAR (RED / WHITE LIGHT • RED / BLACK DARK) -->
     <nav class="bg-white/95 dark:bg-[#1A1012]/95 backdrop-blur-xl border-b border-[#E9E9EC] dark:border-[#342427] sticky top-0 z-50 transition-colors duration-200">
@@ -62,9 +62,7 @@
                 <!-- Brand Logo -->
                 <div class="flex items-center shrink-0">
                     <a href="{{ url('/') }}" wire:navigate class="flex items-center gap-2.5 group">
-                        <div class="w-9 h-9 rounded-xl bg-[#202124] dark:bg-[#251518] border border-[#342427] flex items-center justify-center transition-transform duration-200 group-hover:scale-105 shadow-xs">
-                            <x-logo class="w-5 h-5 text-[#E54855]" />
-                        </div>
+                        <x-logo-badge size="md" class="transition-transform duration-200 group-hover:scale-105" />
                         <span class="font-bold text-xl sm:text-2xl tracking-tight text-[#202124] dark:text-[#F5F5F5]">
                             Praxis<span class="text-[#E54855]">Fit</span>
                         </span>
@@ -75,7 +73,7 @@
                 <div class="hidden lg:flex items-center gap-1 text-sm">
                     <a href="{{ url('/') }}" wire:navigate
                        class="px-3.5 py-2 rounded-xl transition-colors {{ request()->is('/') ? 'text-[#E54855] font-bold bg-[#E54855]/10' : 'text-[#777777] dark:text-[#AAA0A2] hover:text-[#202124] dark:hover:text-[#F5F5F5] hover:bg-[#F7F7F8] dark:hover:bg-[#251518] font-semibold' }}">
-                        Home
+                        Beranda
                     </a>
                     <a href="{{ url('/kalkulator') }}" wire:navigate
                        class="px-3.5 py-2 rounded-xl transition-colors {{ request()->is('kalkulator') ? 'text-[#E54855] font-bold bg-[#E54855]/10' : 'text-[#777777] dark:text-[#AAA0A2] hover:text-[#202124] dark:hover:text-[#F5F5F5] hover:bg-[#F7F7F8] dark:hover:bg-[#251518] font-semibold' }}">
@@ -89,13 +87,6 @@
                        class="px-3.5 py-2 rounded-xl transition-colors {{ request()->is('faq') ? 'text-[#E54855] font-bold bg-[#E54855]/10' : 'text-[#777777] dark:text-[#AAA0A2] hover:text-[#202124] dark:hover:text-[#F5F5F5] hover:bg-[#F7F7F8] dark:hover:bg-[#251518] font-semibold' }}">
                         FAQ & Bantuan
                     </a>
-
-                    @if((Auth::check() && Auth::user()->name === 'admin-praxisfit-1') || Auth::guard('admin')->check())
-                        <a href="{{ route('admin.dashboard') }}" wire:navigate
-                           class="px-3.5 py-2 rounded-xl transition-colors {{ request()->routeIs('admin.*') ? 'text-[#E54855] font-bold bg-[#E54855]/10' : 'text-[#777777] dark:text-[#AAA0A2] hover:text-[#E54855] hover:bg-[#F7F7F8] dark:hover:bg-[#251518] font-semibold' }}">
-                            Panel Admin
-                        </a>
-                    @endif
 
                     <a href="{{ url('/rutinku') }}" wire:navigate
                        class="ml-2 px-4 py-2 rounded-xl transition-all {{ request()->is('rutinku') ? 'bg-[#C93646] text-white shadow-md shadow-[#E54855]/25' : 'bg-[#E54855] text-white hover:bg-[#C93646] shadow-sm shadow-[#E54855]/20' }} font-bold text-xs uppercase tracking-wider flex items-center gap-2">
@@ -174,7 +165,7 @@
 
                             <a href="{{ url('/') }}" wire:navigate @click="mobileMenuOpen = false"
                                class="px-3.5 py-2.5 rounded-xl transition-colors {{ request()->is('/') ? 'bg-[#E54855]/10 text-[#E54855] font-bold' : 'text-[#202124] dark:text-[#F5F5F5] font-semibold hover:bg-[#F7F7F8] dark:hover:bg-[#251518]' }}">
-                                Home
+                                Beranda
                             </a>
                             <a href="{{ url('/kalkulator') }}" wire:navigate @click="mobileMenuOpen = false"
                                class="px-3.5 py-2.5 rounded-xl transition-colors {{ request()->is('kalkulator') ? 'bg-[#E54855]/10 text-[#E54855] font-bold' : 'text-[#202124] dark:text-[#F5F5F5] font-semibold hover:bg-[#F7F7F8] dark:hover:bg-[#251518]' }}">
@@ -192,15 +183,6 @@
                                class="mt-1 px-3.5 py-2.5 rounded-xl bg-[#E54855] hover:bg-[#C93646] text-white font-bold uppercase tracking-wider text-xs text-center transition-colors">
                                 Jadwal Latihan
                             </a>
-
-                            @if(Auth::check() && Auth::user()->name === 'admin-praxisfit-1')
-                                <div class="pt-1 border-t border-[#E9E9EC] dark:border-[#342427]">
-                                    <a href="{{ route('admin.dashboard') }}" wire:navigate @click="mobileMenuOpen = false"
-                                       class="block px-3.5 py-2.5 rounded-xl text-[#202124] dark:text-[#F5F5F5] font-semibold hover:bg-[#F7F7F8] dark:hover:bg-[#251518]">
-                                        Panel Admin
-                                    </a>
-                                </div>
-                            @endif
 
                             <div class="pt-2 mt-1 border-t border-[#E9E9EC] dark:border-[#342427]">
                                 @guest
@@ -284,9 +266,7 @@
     <footer class="bg-white dark:bg-[#1A1012] border-t border-[#E9E9EC] dark:border-[#342427] mt-16 py-8 transition-colors duration-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-xl bg-[#202124] dark:bg-[#251518] border border-[#342427] flex items-center justify-center">
-                    <x-logo class="w-4 h-4 text-[#E54855]" />
-                </div>
+                <x-logo-badge size="sm" />
                 <span class="font-bold text-sm tracking-tight text-[#202124] dark:text-[#F5F5F5]">
                     Praxis<span class="text-[#E54855]">Fit</span> &bull; <span class="font-medium text-[#777777] dark:text-[#AAA0A2]">Konsistensi Hari Ini Adalah Kekuatan Besok.</span>
                 </span>

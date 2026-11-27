@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\DB;
 use App\Models\Exercise;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class ExerciseSeeder extends Seeder
 {
@@ -16,7 +16,7 @@ class ExerciseSeeder extends Seeder
     {
         // [AUTO-MIGRATION FAILSAFE]: Ubah tipe kolom dari ENUM ke VARCHAR(100) agar mendukung target otot spesifik
         try {
-            DB::statement("ALTER TABLE exercises MODIFY COLUMN target_muscle VARCHAR(100) NOT NULL");
+            DB::statement('ALTER TABLE exercises MODIFY COLUMN target_muscle VARCHAR(100) NOT NULL');
         } catch (\Exception $e) {
             // Abaikan jika database bukan MySQL atau kolom sudah bertipe string
         }
@@ -30,11 +30,12 @@ class ExerciseSeeder extends Seeder
 
         if ($response->failed()) {
             $this->command->error('Gagal mengambil data dari GitHub. Pastikan koneksi internet lancar.');
+
             return;
         }
 
         $exercises = $response->json();
-        
+
         // Membersihkan data katalog lama agar database segar dan terstruktur rapi
         Exercise::query()->delete();
 
@@ -46,7 +47,7 @@ class ExerciseSeeder extends Seeder
             $equipment = strtolower(trim((string) ($ex['equipment'] ?? 'none')));
             $allowedEquipments = ['body only', 'body weight', 'bodyweight', 'assisted', 'none', 'body-only', 'calisthenics', 'other', '', 'dumbbell', 'barbell', 'cable', 'band'];
 
-            if (!in_array($equipment, $allowedEquipments)) {
+            if (! in_array($equipment, $allowedEquipments)) {
                 continue; // Lewati jika menggunakan mesin gym kompleks lainnya
             }
 
@@ -62,25 +63,25 @@ class ExerciseSeeder extends Seeder
             // Merapikan instruksi asli
             $rawInstructions = '';
             if (isset($ex['instructions']) && is_array($ex['instructions'])) {
-                $rawInstructions = implode(" ", $ex['instructions']);
+                $rawInstructions = implode(' ', $ex['instructions']);
             } elseif (isset($ex['instructions']) && is_string($ex['instructions'])) {
                 $rawInstructions = $ex['instructions'];
             }
-            
+
             if (empty(trim($rawInstructions))) {
                 $rawInstructions = 'Lakukan gerakan ini dengan postur tubuh yang benar, jaga keseimbangan, dan atur tempo serta pernapasan dengan baik.';
             }
 
             // Overrides untuk gerakan yang instruksinya tidak lengkap/kosong dari sumber aslinya
             $overrides = [
-                'Bicycling' => "Untuk memulai, duduklah di atas sepeda dan sesuaikan tempat duduk dengan tinggi badan Anda. Pastikan posisi lutut sedikit menekuk saat pedal berada di titik terendah. Pegang stang sepeda dengan posisi nyaman dan jaga punggung Anda agar tetap lurus atau sedikit condong ke depan. Mulailah mengayuh pedal dengan kecepatan stabil, pastikan gerakan memutar penuh dari atas ke bawah. Lakukan selama durasi yang ditentukan sambil mengatur napas secara teratur.",
-                'Side Bridge' => "Berbaringlah miring dengan tubuh ditopang oleh satu siku dan sisi luar kaki bawah Anda. Angkat pinggul hingga tubuh membentuk garis lurus dari kepala hingga kaki. Tahan posisi ini selama durasi yang ditentukan sambil menahan otot inti (core) tetap kencang. Atur napas dan pastikan pinggul tidak turun.",
-                'Side Jackknife' => "Berbaring miring di lantai dengan kaki lurus ditumpuk. Letakkan tangan atas di belakang kepala. Angkat kaki atas dan batang tubuh secara bersamaan sehingga siku mendekati pinggul, mengontraksikan otot obliques (perut samping). Turunkan perlahan secara terkontrol dan ulangi sebelum berganti sisi.",
-                'Shoulder Raise' => "Berdirilah tegak dengan lengan rileks di samping tubuh. Angkat kedua bahu Anda lurus ke atas menuju telinga (shrug). Tahan puncak kontraksi sejenak, lalu turunkan perlahan kembali ke posisi awal. Lakukan dengan gerakan terkontrol tanpa menyentak.",
-                'Shoulder Stretch' => "Berdiri atau duduk tegak. Bawa satu lengan melintasi dada Anda dan jaga agar tetap lurus. Gunakan lengan satunya untuk menahan dan menariknya perlahan lebih dekat ke dada hingga terasa regangan di bahu. Tahan peregangan selama 15-30 detik lalu ganti sisi.",
-                'Triceps Stretch' => "Angkat satu lengan ke atas dan tekuk siku sehingga tangan Anda berada di belakang leher. Gunakan tangan yang lain untuk memegang siku tersebut dan tarik perlahan ke belakang/dalam. Tahan posisi regangan ini selama 15-30 detik lalu ganti dengan lengan yang lain.",
-                'Upper Back Stretch' => "Tautkan jari-jari kedua tangan di depan dada Anda. Luruskan lengan ke depan sambil memutar telapak tangan ke luar. Dorong lengan ke depan sejauh mungkin sambil sedikit membulatkan punggung atas dan menundukkan kepala. Tahan selama 15-30 detik untuk meregangkan punggung bagian atas.",
-                'Side Neck Stretch' => "Duduk atau berdiri tegak dengan bahu rileks. Miringkan kepala perlahan ke satu sisi, mendekatkan telinga ke arah bahu. Anda bisa menggunakan tangan untuk memberi tarikan ekstra yang sangat lembut di sisi kepala. Tahan peregangan 15-30 detik lalu ulangi untuk sisi lainnya."
+                'Bicycling' => 'Untuk memulai, duduklah di atas sepeda dan sesuaikan tempat duduk dengan tinggi badan Anda. Pastikan posisi lutut sedikit menekuk saat pedal berada di titik terendah. Pegang stang sepeda dengan posisi nyaman dan jaga punggung Anda agar tetap lurus atau sedikit condong ke depan. Mulailah mengayuh pedal dengan kecepatan stabil, pastikan gerakan memutar penuh dari atas ke bawah. Lakukan selama durasi yang ditentukan sambil mengatur napas secara teratur.',
+                'Side Bridge' => 'Berbaringlah miring dengan tubuh ditopang oleh satu siku dan sisi luar kaki bawah Anda. Angkat pinggul hingga tubuh membentuk garis lurus dari kepala hingga kaki. Tahan posisi ini selama durasi yang ditentukan sambil menahan otot inti (core) tetap kencang. Atur napas dan pastikan pinggul tidak turun.',
+                'Side Jackknife' => 'Berbaring miring di lantai dengan kaki lurus ditumpuk. Letakkan tangan atas di belakang kepala. Angkat kaki atas dan batang tubuh secara bersamaan sehingga siku mendekati pinggul, mengontraksikan otot obliques (perut samping). Turunkan perlahan secara terkontrol dan ulangi sebelum berganti sisi.',
+                'Shoulder Raise' => 'Berdirilah tegak dengan lengan rileks di samping tubuh. Angkat kedua bahu Anda lurus ke atas menuju telinga (shrug). Tahan puncak kontraksi sejenak, lalu turunkan perlahan kembali ke posisi awal. Lakukan dengan gerakan terkontrol tanpa menyentak.',
+                'Shoulder Stretch' => 'Berdiri atau duduk tegak. Bawa satu lengan melintasi dada Anda dan jaga agar tetap lurus. Gunakan lengan satunya untuk menahan dan menariknya perlahan lebih dekat ke dada hingga terasa regangan di bahu. Tahan peregangan selama 15-30 detik lalu ganti sisi.',
+                'Triceps Stretch' => 'Angkat satu lengan ke atas dan tekuk siku sehingga tangan Anda berada di belakang leher. Gunakan tangan yang lain untuk memegang siku tersebut dan tarik perlahan ke belakang/dalam. Tahan posisi regangan ini selama 15-30 detik lalu ganti dengan lengan yang lain.',
+                'Upper Back Stretch' => 'Tautkan jari-jari kedua tangan di depan dada Anda. Luruskan lengan ke depan sambil memutar telapak tangan ke luar. Dorong lengan ke depan sejauh mungkin sambil sedikit membulatkan punggung atas dan menundukkan kepala. Tahan selama 15-30 detik untuk meregangkan punggung bagian atas.',
+                'Side Neck Stretch' => 'Duduk atau berdiri tegak dengan bahu rileks. Miringkan kepala perlahan ke satu sisi, mendekatkan telinga ke arah bahu. Anda bisa menggunakan tangan untuk memberi tarikan ekstra yang sangat lembut di sisi kepala. Tahan peregangan 15-30 detik lalu ulangi untuk sisi lainnya.',
             ];
 
             $exName = ucwords($ex['name']);
@@ -95,37 +96,37 @@ class ExerciseSeeder extends Seeder
             $alternativeEquipmentText = null;
             if ($target !== 'Dada') {
                 if (str_contains($equipment, 'dumbbell')) {
-                    $alternativeEquipmentText = "Dumbbell bisa diganti dengan ember berisi buku, jerigen air, atau tas yang diberi beban.";
+                    $alternativeEquipmentText = 'Dumbbell bisa diganti dengan ember berisi buku, jerigen air, atau tas yang diberi beban.';
                 } elseif (str_contains($equipment, 'barbell')) {
-                    $alternativeEquipmentText = "Barbel bisa diganti dengan gagang kayu, tongkat besi, atau pull up bar yang sebelahnya dipakaikan beban dengan seimbang.";
+                    $alternativeEquipmentText = 'Barbel bisa diganti dengan gagang kayu, tongkat besi, atau pull up bar yang sebelahnya dipakaikan beban dengan seimbang.';
                 } elseif (str_contains($equipment, 'cable') || str_contains($equipment, 'band')) {
-                    $alternativeEquipmentText = "Mesin tali (cable) bisa diganti dengan resistance band atau resistance band versi yoga.";
+                    $alternativeEquipmentText = 'Mesin tali (cable) bisa diganti dengan resistance band atau resistance band versi yoga.';
                 }
-            } 
-            
+            }
+
             // Tautan animasi online
             $icon = '🏋️';
             $image_1 = null;
             $image_2 = null;
 
-            if (!empty($ex['gifUrl']) && (str_starts_with($ex['gifUrl'], 'http://') || str_starts_with($ex['gifUrl'], 'https://'))) {
+            if (! empty($ex['gifUrl']) && (str_starts_with($ex['gifUrl'], 'http://') || str_starts_with($ex['gifUrl'], 'https://'))) {
                 $icon = $ex['gifUrl'];
-            } elseif (!empty($ex['images']) && is_array($ex['images']) && count($ex['images']) > 0) {
+            } elseif (! empty($ex['images']) && is_array($ex['images']) && count($ex['images']) > 0) {
                 // Populate images array
                 foreach ([0, 1] as $idx) {
                     if (isset($ex['images'][$idx])) {
                         $imgPath = $ex['images'][$idx];
                         $fullPath = $imgPath;
-                        if (!str_starts_with($imgPath, 'http://') && !str_starts_with($imgPath, 'https://')) {
+                        if (! str_starts_with($imgPath, 'http://') && ! str_starts_with($imgPath, 'https://')) {
                             if (str_contains($imgPath, '/')) {
-                                $fullPath = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/" . $imgPath;
-                            } elseif (!empty($ex['id'])) {
-                                $fullPath = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/" . $ex['id'] . "/" . $imgPath;
+                                $fullPath = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/'.$imgPath;
+                            } elseif (! empty($ex['id'])) {
+                                $fullPath = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/'.$ex['id'].'/'.$imgPath;
                             } else {
-                                $fullPath = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/" . $imgPath;
+                                $fullPath = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/'.$imgPath;
                             }
                         }
-                        
+
                         if ($idx === 0) {
                             $image_1 = $fullPath;
                             $icon = $fullPath; // Use first image as icon fallback
@@ -134,7 +135,7 @@ class ExerciseSeeder extends Seeder
                         }
                     }
                 }
-            } elseif (!empty($ex['gif_url'])) {
+            } elseif (! empty($ex['gif_url'])) {
                 $icon = $ex['gif_url'];
             }
 
@@ -146,14 +147,14 @@ class ExerciseSeeder extends Seeder
                 ['name' => ucwords($ex['name'])],
                 [
                     'target_muscle' => $target,
-                    'category'      => $mappedCategory,
-                    'equipment'     => $mappedEquipment,
-                    'difficulty'    => $difficulty,
-                    'instructions'  => $indoInstructions,
-                    'icon'          => $icon,
-                    'image_1'       => $image_1,
-                    'image_2'       => $image_2,
-                    'alternative_equipment' => $alternativeEquipmentText
+                    'category' => $mappedCategory,
+                    'equipment' => $mappedEquipment,
+                    'difficulty' => $difficulty,
+                    'instructions' => $indoInstructions,
+                    'icon' => $icon,
+                    'image_1' => $image_1,
+                    'image_2' => $image_2,
+                    'alternative_equipment' => $alternativeEquipmentText,
                 ]
             );
 
@@ -169,7 +170,7 @@ class ExerciseSeeder extends Seeder
      */
     private function mapTarget(array $muscles, string $bodyPart, string $target, string $exerciseName): string
     {
-        $combined = strtolower(implode(' ', $muscles) . ' ' . $bodyPart . ' ' . $target . ' ' . $exerciseName);
+        $combined = strtolower(implode(' ', $muscles).' '.$bodyPart.' '.$target.' '.$exerciseName);
 
         $mapping = [
             'tricep' => 'Trisep',
@@ -220,7 +221,7 @@ class ExerciseSeeder extends Seeder
         // Gunakan Google Translate API (Gratis, tanpa key) untuk menerjemahkan teks mentah
         $translated = $rawText;
         try {
-            $url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=id&dt=t&q=' . urlencode($rawText);
+            $url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=id&dt=t&q='.urlencode($rawText);
             $response = Http::withoutVerifying()->timeout(10)->get($url);
             if ($response->successful()) {
                 $json = $response->json();
@@ -232,7 +233,7 @@ class ExerciseSeeder extends Seeder
                         }
                     }
                 }
-                if (!empty(trim($result))) {
+                if (! empty(trim($result))) {
                     $translated = $result;
                 }
             }
@@ -250,22 +251,44 @@ class ExerciseSeeder extends Seeder
     private function mapDifficulty($rawLevel): string
     {
         $level = strtolower((string) $rawLevel);
-        if (str_contains($level, 'begin')) return 'Pemula';
-        if (str_contains($level, 'inter')) return 'Menengah';
-        if (str_contains($level, 'adv') || str_contains($level, 'expe')) return 'Lanjut';
+        if (str_contains($level, 'begin')) {
+            return 'Pemula';
+        }
+        if (str_contains($level, 'inter')) {
+            return 'Menengah';
+        }
+        if (str_contains($level, 'adv') || str_contains($level, 'expe')) {
+            return 'Lanjut';
+        }
+
         return 'Menengah';
     }
 
     private function mapEquipment(string $rawEquipment, string $exerciseName): string
     {
-        $combined = strtolower($rawEquipment . ' ' . $exerciseName);
-        if (str_contains($combined, 'kettlebell')) return 'Kettlebell';
-        if (str_contains($combined, 'resistance band') || str_contains($rawEquipment, 'band')) return 'Resistance Band';
-        if (str_contains($rawEquipment, 'cable') || str_contains($combined, 'cable')) return 'Cable';
-        if (str_contains($rawEquipment, 'dumbbell') || str_contains($combined, 'dumbbell')) return 'Dumbbell';
-        if (str_contains($rawEquipment, 'barbell') || str_contains($combined, 'barbell')) return 'Barbell';
-        if (str_contains($rawEquipment, 'machine') || str_contains($combined, 'machine')) return 'Machine';
-        if (in_array($rawEquipment, ['other', 'medicine ball', 'exercise ball', 'foam roll'])) return 'Alat Bantu Lainnya';
+        $combined = strtolower($rawEquipment.' '.$exerciseName);
+        if (str_contains($combined, 'kettlebell')) {
+            return 'Kettlebell';
+        }
+        if (str_contains($combined, 'resistance band') || str_contains($rawEquipment, 'band')) {
+            return 'Resistance Band';
+        }
+        if (str_contains($rawEquipment, 'cable') || str_contains($combined, 'cable')) {
+            return 'Cable';
+        }
+        if (str_contains($rawEquipment, 'dumbbell') || str_contains($combined, 'dumbbell')) {
+            return 'Dumbbell';
+        }
+        if (str_contains($rawEquipment, 'barbell') || str_contains($combined, 'barbell')) {
+            return 'Barbell';
+        }
+        if (str_contains($rawEquipment, 'machine') || str_contains($combined, 'machine')) {
+            return 'Machine';
+        }
+        if (in_array($rawEquipment, ['other', 'medicine ball', 'exercise ball', 'foam roll'])) {
+            return 'Alat Bantu Lainnya';
+        }
+
         return 'Bodyweight';
     }
 
@@ -278,6 +301,7 @@ class ExerciseSeeder extends Seeder
         if (str_contains($nameLower, 'stretch') || str_contains($nameLower, 'foam') || str_contains($nameLower, 'mobility')) {
             return 'Mobilitas & Peregangan';
         }
+
         return 'Kekuatan & Hipertrofi';
     }
 }

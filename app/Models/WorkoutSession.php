@@ -13,14 +13,21 @@ class WorkoutSession extends Model
     use HasFactory;
 
     public const STATUS_UPCOMING = 'upcoming';
+
     public const STATUS_IN_PROGRESS = 'in_progress';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_MISSED = 'missed';
 
     protected $fillable = [
         'user_id',
+        'workout_program_id',
+        'workout_program_day_id',
         'name',
         'category',
+        'training_method',
+        'week_number',
         'scheduled_date',
         'scheduled_time',
         'actual_date',
@@ -36,6 +43,9 @@ class WorkoutSession extends Model
     protected function casts(): array
     {
         return [
+            'workout_program_id' => 'integer',
+            'workout_program_day_id' => 'integer',
+            'week_number' => 'integer',
             'scheduled_date' => 'date',
             'actual_date' => 'date',
             'started_at' => 'datetime',
@@ -49,6 +59,16 @@ class WorkoutSession extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function program(): BelongsTo
+    {
+        return $this->belongsTo(WorkoutProgram::class, 'workout_program_id');
+    }
+
+    public function programDay(): BelongsTo
+    {
+        return $this->belongsTo(WorkoutProgramDay::class, 'workout_program_day_id');
     }
 
     public function items(): HasMany
@@ -95,7 +115,7 @@ class WorkoutSession extends Model
 
     public function formattedDuration(): ?string
     {
-        if (!$this->duration_seconds || $this->duration_seconds <= 0) {
+        if (! $this->duration_seconds || $this->duration_seconds <= 0) {
             return null;
         }
 
@@ -112,7 +132,7 @@ class WorkoutSession extends Model
 
     public static function formatIndonesianDate($date): string
     {
-        if (!$date) {
+        if (! $date) {
             return '-';
         }
 

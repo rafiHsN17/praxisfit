@@ -54,7 +54,7 @@
                         </span>
                     @else
                         <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-white dark:bg-[#1A1012] text-[#777777] dark:text-[#AAA0A2] border border-[#E9E9EC] dark:border-[#342427]">
-                            Asia/Jakarta
+                            Terjadwal
                         </span>
                     @endif
                 </div>
@@ -206,7 +206,29 @@
                     </div>
                 </div>
 
-                @if(!$isGuest && $latestHistorySession)
+                @if(!$isGuest && $activeProgramSummary)
+                    <div class="p-3.5 rounded-xl bg-[#E54855]/8 border border-[#E54855]/30 text-xs space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="font-extrabold text-[#E54855] uppercase text-[10px] tracking-wider">Program Aktif</span>
+                            <span class="px-2 py-0.5 rounded-md bg-white dark:bg-[#1A1012] text-[#202124] dark:text-[#F5F5F5] text-[10px] font-bold border border-[#E9E9EC] dark:border-[#342427]">
+                                Minggu {{ $activeProgramSummary['current_week'] }}/{{ $activeProgramSummary['total_weeks'] }}
+                            </span>
+                        </div>
+                        <p class="font-extrabold text-[#202124] dark:text-[#F5F5F5] truncate">{{ $activeProgramSummary['name'] }}</p>
+                        <div class="w-full h-1.5 rounded-full bg-white dark:bg-[#100809] overflow-hidden">
+                            <div class="h-full bg-[#E54855] rounded-full" style="width: {{ $activeProgramSummary['progress_percent'] }}%"></div>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px] text-[#777777] dark:text-[#AAA0A2] font-semibold">
+                            <span>Progres {{ $activeProgramSummary['progress_percent'] }}%</span>
+                            <span>{{ $activeProgramSummary['completed_count'] }} selesai &bull; {{ $activeProgramSummary['pending_count'] }} belum</span>
+                        </div>
+                        @if($activeProgramSummary['next_session_name'])
+                            <div class="text-[11px] text-[#202124] dark:text-[#F5F5F5] pt-1 border-t border-[#E54855]/20 truncate">
+                                Terdekat: <strong>{{ $activeProgramSummary['next_session_name'] }}</strong> ({{ $activeProgramSummary['next_session_date'] }})
+                            </div>
+                        @endif
+                    </div>
+                @elseif(!$isGuest && $latestHistorySession)
                     <div class="p-3 rounded-xl bg-[#F7F7F8] dark:bg-[#251518] border border-[#E9E9EC] dark:border-[#342427] text-xs space-y-0.5">
                         <div class="flex items-center justify-between gap-2">
                             <span class="font-bold text-[#777777] dark:text-[#AAA0A2] uppercase text-[10px]">Riwayat Terakhir</span>
